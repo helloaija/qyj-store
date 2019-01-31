@@ -105,38 +105,38 @@ public class QyjProductController extends BaseController {
 	@RequestMapping("/saveProductInfo")
 	public ResultBean saveProductInfo(QyjProductEntity productEntity, HttpServletRequest request,
 			HttpServletResponse response) throws Exception{
-            QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-			Date nowDate = new Date();
-			productEntity.setUpdateTime(nowDate);
-			productEntity.setUpdateUser(userDetails.getUserId());
+		Date nowDate = new Date();
+		productEntity.setUpdateTime(nowDate);
+		productEntity.setUpdateUser(userDetails.getUserId());
 
-			// id为空插入数据
-			if (productEntity.getId() == null || productEntity.getId() == 0) {
-				productEntity.setCreateTime(nowDate);
-				productEntity.setCreateUser(userDetails.getUserId());
-				productEntity.setNumber(0);
-				productEntity.setSoldNumber(0);
-				productEntity.setUnpayNumber(0);
-				productEntity.setProductStatus(ProductStatusEnum.PUBLISH.toString());
-				int insertResult = productService.insert(productEntity);
-				logger.info("saveProductInfo insert productEntity, info={}, result={}", productEntity.toString(),
-						insertResult);
-				if (insertResult == 1) {
-					return new ResultBean("0000", "新增产品信息成功", insertResult);
-				}
-				return new ResultBean("0002", "新增产品信息失败", insertResult);
+		// id为空插入数据
+		if (productEntity.getId() == null || productEntity.getId() == 0) {
+			productEntity.setCreateTime(nowDate);
+			productEntity.setCreateUser(userDetails.getUserId());
+			productEntity.setNumber(0);
+			productEntity.setSoldNumber(0);
+			productEntity.setUnpayNumber(0);
+			productEntity.setProductStatus(ProductStatusEnum.PUBLISH.toString());
+			int insertResult = productService.insert(productEntity);
+			logger.info("saveProductInfo insert productEntity, info={}, result={}", productEntity.toString(),
+					insertResult);
+			if (insertResult == 1) {
+				return new ResultBean("0000", "新增产品信息成功", insertResult);
 			}
+			return new ResultBean("0002", "新增产品信息失败", insertResult);
+		}
 
-			// 编辑更新数据
-			productEntity.setUpdateTime(nowDate);
-			int updateResult = productService.updateByPrimaryKey(productEntity);
-			logger.info("saveProductInfo update productEntity, info={}, result={}", productEntity.toString(),
-					updateResult);
-			if (updateResult == 1) {
-				return new ResultBean("0000", "更新产品信息成功", updateResult);
-			}
-			return new ResultBean("0002", "更新产品信息失败", updateResult);
+		// 编辑更新数据
+		productEntity.setUpdateTime(nowDate);
+		int updateResult = productService.updateByPrimaryKey(productEntity);
+		logger.info("saveProductInfo update productEntity, info={}, result={}", productEntity.toString(),
+				updateResult);
+		if (updateResult == 1) {
+			return new ResultBean("0000", "更新产品信息成功", updateResult);
+		}
+		return new ResultBean("0002", "更新产品信息失败", updateResult);
 	}
 
 	/**
@@ -148,17 +148,12 @@ public class QyjProductController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping("/delProductInfo")
-	public ResultBean delProductInfo(Long productId, HttpServletRequest request, HttpServletResponse response) {
-		try {
-			int deleteResult = productService.deleteProductInfo(productId);
-			if (deleteResult == 1) {
-				return new ResultBean("0000", "删除产品信息成功", deleteResult);
-			}
-			return new ResultBean("0002", "删除产品信息失败", deleteResult);
-		} catch (Exception e) {
-			logger.error("delProductInfo error", e);
-			return new ResultBean("0001", "请求异常:" + e.getMessage(), e);
+	public ResultBean delProductInfo(Long productId, HttpServletRequest request, HttpServletResponse response) throws Exception{
+		int deleteResult = productService.deleteByPrimaryKey(productId);
+		if (deleteResult == 1) {
+			return new ResultBean("0000", "删除产品信息成功", deleteResult);
 		}
+		return new ResultBean("0002", "删除产品信息失败", deleteResult);
 	}
 
 
