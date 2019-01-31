@@ -53,7 +53,7 @@ public class QyjProductController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping("/listProductPage")
-	public ResultBean listProductPage(HttpServletRequest request, HttpServletResponse response) {
+	public ResultBean listProductPage(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		PageParam pageParam = this.initPageParam(request);
 		// 产品标题
 		String productTitle = request.getParameter("title");
@@ -68,14 +68,11 @@ public class QyjProductController extends BaseController {
 		paramMap.put("productType", productType);
 		paramMap.put("createTimeBegin", createTimeBegin);
 		paramMap.put("createTimeEnd", createTimeEnd);
-		try {
-			pageParam.setOrderByCondition("create_time desc");
-			PageBean pageBean = productService.listProjectPage(pageParam, paramMap);
-			return new ResultBean("0000", "请求成功", pageBean);
-		} catch (Exception e) {
-			logger.error("listProductPage error", e);
-			return new ResultBean("0001", "请求异常:" + e.getMessage(), e);
-		}
+		pageParam.setOrderByCondition("create_time desc");
+		PageBean pageBean = productService.listProjectPage(pageParam, paramMap);
+		return new ResultBean("0000", "请求成功", pageBean);
+		// 	logger.error("listProductPage error", e);
+		// 	return new ResultBean("0001", "请求异常:" + e.getMessage(), e);
 	}
 
 	/**

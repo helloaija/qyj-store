@@ -17,8 +17,9 @@ server:
 
 #打印sql日志
 logging:
-    level:
-      com:
-        qyj:
-          store:
-            dao: debug
+  level:
+    com:
+      qyj:
+        store:
+          dao: debug
+  path: D:\workspace_idea\logs
