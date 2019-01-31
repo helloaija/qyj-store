@@ -10,9 +10,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.qyj.store.config.QyjUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,8 +73,6 @@ public class QyjProductController extends BaseController {
 		pageParam.setOrderByCondition("create_time desc");
 		PageBean pageBean = productService.listProjectPage(pageParam, paramMap);
 		return new ResultBean("0000", "请求成功", pageBean);
-		// 	logger.error("listProductPage error", e);
-		// 	return new ResultBean("0001", "请求异常:" + e.getMessage(), e);
 	}
 
 	/**
@@ -104,18 +104,17 @@ public class QyjProductController extends BaseController {
 	@ResponseBody
 	@RequestMapping("/saveProductInfo")
 	public ResultBean saveProductInfo(QyjProductEntity productEntity, HttpServletRequest request,
-			HttpServletResponse response) {
-		try {
-			SysUserBean userBean = (SysUserBean) SessionUtil.getAttribute(request, CommonConstant.SESSION_USER);
+			HttpServletResponse response) throws Exception{
+            QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 			Date nowDate = new Date();
 			productEntity.setUpdateTime(nowDate);
-			productEntity.setUpdateUser(userBean.getId());
+			productEntity.setUpdateUser(userDetails.getUserId());
 
 			// id为空插入数据
 			if (productEntity.getId() == null || productEntity.getId() == 0) {
 				productEntity.setCreateTime(nowDate);
-				productEntity.setCreateUser(userBean.getId());
+				productEntity.setCreateUser(userDetails.getUserId());
 				productEntity.setNumber(0);
 				productEntity.setSoldNumber(0);
 				productEntity.setUnpayNumber(0);
@@ -138,10 +137,6 @@ public class QyjProductController extends BaseController {
 				return new ResultBean("0000", "更新产品信息成功", updateResult);
 			}
 			return new ResultBean("0002", "更新产品信息失败", updateResult);
-		} catch (Exception e) {
-			logger.error("saveProductInfo error", e);
-			return new ResultBean("0001", "请求异常:" + e.getMessage(), e);
-		}
 	}
 
 	/**
@@ -166,31 +161,6 @@ public class QyjProductController extends BaseController {
 		}
 	}
 
-	/**
-	 * 上传项目缩略图
-	 * @param file
-	 * @param request
-	 * @param response
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/uploadImage")
-	public ResultBean uploadImage(HttpServletResponse response, HttpServletRequest request,
-			MultipartHttpServletRequest files, @RequestParam("file") MultipartFile file) {
-		try {
-			String todayDir = new SimpleDateFormat("yyyyMMdd").format(new Date());
-
-			// 图片保存文件夹地址
-			String fileDirPath = Utils.getUploadFilePath() + File.separator + "product" + File.separator + todayDir;
-			FileUtils.mkDirs(fileDirPath);
-
-			FileCopyUtils.copy(file.getBytes(),
-					new FileOutputStream(fileDirPath + File.separator + file.getOriginalFilename()));
-			return new ResultBean("0000", "图片上传成功", null);
-		} catch (Exception e) {
-			logger.error("uploadImg error", e);
-			return new ResultBean("0001", "请求异常:" + e.getMessage(), e);
-		}
-	}
 
 	/**
 	 * 保存产品信息

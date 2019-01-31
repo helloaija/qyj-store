@@ -26,6 +26,7 @@ public class QyjUserDetailsService implements UserDetailsService {
         }
 
         QyjUserDetails userDetails = new QyjUserDetails();
+        userDetails.setUserId(sysUserModel.getId());
         userDetails.setUsername(userName);
         userDetails.setPassword(sysUserModel.getPassword());
         userDetails.setAuthorities(null);

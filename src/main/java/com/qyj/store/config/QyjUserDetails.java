@@ -13,6 +13,7 @@ import java.util.Set;
  */
 public class QyjUserDetails implements UserDetails, Serializable {
 
+	private Long userId;
 	private String username;
 	private String password;
 	private Set<? extends GrantedAuthority> authorities;
@@ -73,5 +74,13 @@ public class QyjUserDetails implements UserDetails, Serializable {
 
 	public void setJwtToken(String jwtToken) {
 		this.jwtToken = jwtToken;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 }
