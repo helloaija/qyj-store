@@ -12,192 +12,228 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 public class QyjProductEntity implements Serializable {
 
-	private static final long serialVersionUID = -5320457761225802641L;
+    private static final long serialVersionUID = -5320457761225802641L;
 
-	/** 主键ID **/
-	private Long id;
+    /** 主键ID **/
+    private Long id;
 
-	/** 产品标题 */
-	private String title;
+    /** 产品标题 */
+    private String title;
 
-	/** 单位价格 */
-	private BigDecimal price;
+    /** 单位价格 */
+    private BigDecimal price;
 
-	/** 产品类型 */
-	private String productType;
+    /** 产品类型 */
+    private String productType;
 
-	/** 产品状态 */
-	private String productStatus;
+    /** 产品状态 */
+    private String productStatus;
 
-	/** 产品库存 */
-	private Integer number;
-	
-	/** 已售数量 */
-	private Integer soldNumber;
-	
-	/** 未支付数量 */
-	private Integer unpayNumber;
-	
-	/** 产品数量单位 */
-	private String productUnit;
+    /** 产品库存 */
+    private Integer number;
 
-	/** 产品说明 */
-	private String remark;
+    /** 已售数量 */
+    private Integer soldNumber;
 
-	/** 版本号 **/
-	private Integer version = 0;
+    /** 未支付数量 */
+    private Integer unpayNumber;
 
-	/** 创建人id */
-	private Long createUser;
+    /** 产品数量单位 */
+    private String productUnit;
 
-	/** 创建时间 **/
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	private Date createTime;
+    /** 产品说明 */
+    private String remark;
 
-	/** 更新人id */
-	private Long updateUser;
+    /** 版本号 **/
+    private Integer version = 0;
 
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	private Date updateTime;
+    /** 创建人id */
+    private Long createUser;
 
-	public Long getId() {
-		return id;
-	}
+    /** 创建时间 **/
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    /** 更新人id */
+    private Long updateUser;
 
-	public String getTitle() {
-		return title;
-	}
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    /** 已经被删除[0：未删除，1：已删除] */
+    private int isDel;
 
-	public BigDecimal getPrice() {
-		return price;
-	}
+    private Long delUser;
 
-	public void setPrice(BigDecimal price) {
-		this.price = price;
-	}
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date delTime;
 
-	public String getProductType() {
-		return productType;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setProductType(String productType) {
-		this.productType = productType;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getProductStatus() {
-		return productStatus;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setProductStatus(String productStatus) {
-		this.productStatus = productStatus;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public Integer getNumber() {
-		return number;
-	}
+    public BigDecimal getPrice() {
+        return price;
+    }
 
-	public void setNumber(Integer number) {
-		this.number = number;
-	}
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
 
-	public Integer getSoldNumber() {
-		return soldNumber;
-	}
+    public String getProductType() {
+        return productType;
+    }
 
-	public void setSoldNumber(Integer soldNumber) {
-		this.soldNumber = soldNumber;
-	}
+    public void setProductType(String productType) {
+        this.productType = productType;
+    }
 
-	public Integer getUnpayNumber() {
-		return unpayNumber;
-	}
+    public String getProductStatus() {
+        return productStatus;
+    }
 
-	public void setUnpayNumber(Integer unpayNumber) {
-		this.unpayNumber = unpayNumber;
-	}
+    public void setProductStatus(String productStatus) {
+        this.productStatus = productStatus;
+    }
 
-	public String getProductUnit() {
-		return productUnit;
-	}
+    public Integer getNumber() {
+        return number;
+    }
 
-	public void setProductUnit(String productUnit) {
-		this.productUnit = productUnit;
-	}
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
 
-	public Integer getVersion() {
-		return version;
-	}
+    public Integer getSoldNumber() {
+        return soldNumber;
+    }
 
-	public void setVersion(Integer version) {
-		this.version = version;
-	}
+    public void setSoldNumber(Integer soldNumber) {
+        this.soldNumber = soldNumber;
+    }
 
-	public Long getCreateUser() {
-		return createUser;
-	}
+    public Integer getUnpayNumber() {
+        return unpayNumber;
+    }
 
-	public void setCreateUser(Long createUser) {
-		this.createUser = createUser;
-	}
+    public void setUnpayNumber(Integer unpayNumber) {
+        this.unpayNumber = unpayNumber;
+    }
 
-	public Date getCreateTime() {
-		return createTime;
-	}
+    public String getProductUnit() {
+        return productUnit;
+    }
 
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
+    public void setProductUnit(String productUnit) {
+        this.productUnit = productUnit;
+    }
 
-	public Long getUpdateUser() {
-		return updateUser;
-	}
+    public Integer getVersion() {
+        return version;
+    }
 
-	public void setUpdateUser(Long updateUser) {
-		this.updateUser = updateUser;
-	}
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
-	public Date getUpdateTime() {
-		return updateTime;
-	}
+    public Long getCreateUser() {
+        return createUser;
+    }
 
-	public void setUpdateTime(Date updateTime) {
-		this.updateTime = updateTime;
-	}
+    public void setCreateUser(Long createUser) {
+        this.createUser = createUser;
+    }
 
-	public String getRemark() {
-		return remark;
-	}
+    public Date getCreateTime() {
+        return createTime;
+    }
 
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 
-	@Override
-	public String toString() {
-		return "QyjProductEntity{" +
-				"id=" + id +
-				", title='" + title + '\'' +
-				", price=" + price +
-				", productType='" + productType + '\'' +
-				", productStatus='" + productStatus + '\'' +
-				", number=" + number +
-				", soldNumber=" + soldNumber +
-				", unpayNumber=" + unpayNumber +
-				", productUnit='" + productUnit + '\'' +
-				", remark='" + remark + '\'' +
-				", version=" + version +
-				", createUser=" + createUser +
-				", createTime=" + createTime +
-				", updateUser=" + updateUser +
-				", updateTime=" + updateTime +
-				'}';
-	}
+    public Long getUpdateUser() {
+        return updateUser;
+    }
+
+    public void setUpdateUser(Long updateUser) {
+        this.updateUser = updateUser;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public int getIsDel() {
+        return isDel;
+    }
+
+    public void setIsDel(int isDel) {
+        this.isDel = isDel;
+    }
+
+    public Long getDelUser() {
+        return delUser;
+    }
+
+    public void setDelUser(Long delUser) {
+        this.delUser = delUser;
+    }
+
+    public Date getDelTime() {
+        return delTime;
+    }
+
+    public void setDelTime(Date delTime) {
+        this.delTime = delTime;
+    }
+
+    @Override
+    public String toString() {
+        return "QyjProductEntity{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", price=" + price +
+                ", productType='" + productType + '\'' +
+                ", productStatus='" + productStatus + '\'' +
+                ", number=" + number +
+                ", soldNumber=" + soldNumber +
+                ", unpayNumber=" + unpayNumber +
+                ", productUnit='" + productUnit + '\'' +
+                ", remark='" + remark + '\'' +
+                ", version=" + version +
+                ", createUser=" + createUser +
+                ", createTime=" + createTime +
+                ", updateUser=" + updateUser +
+                ", updateTime=" + updateTime +
+                ", isDel=" + isDel +
+                ", delUser=" + delUser +
+                ", delTime=" + delTime +
+                '}';
+    }
+
 }

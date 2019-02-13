@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.qyj.store.entity.QyjProductEntity;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 产品信息mapper
@@ -48,11 +49,11 @@ public interface QyjProductMapper {
 	int updateByPrimaryKeySelective(QyjProductEntity record);
 
 	/**
-	 * 根据产品id更新产品信息
+	 * 更新在页面上编辑的产品
 	 * @param record
 	 * @return
 	 */
-	int updateByPrimaryKey(QyjProductEntity record);
+	int updateProductEdit(QyjProductEntity record);
 	
 	/**
 	 * 根据条件统计产品数量
@@ -74,4 +75,12 @@ public interface QyjProductMapper {
 	 * @return
 	 */
 	int updateProductNumberBatch(List<QyjProductEntity> list);
+
+	/**
+	 * 删除产品，假删除
+	 * @param productId
+	 * @param userId
+	 * @return
+	 */
+	int deleteProduct(@Param("productId") Long productId, @Param("userId") Long userId);
 }

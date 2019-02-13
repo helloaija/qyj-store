@@ -49,6 +49,7 @@
 
 	<update id="updateByPrimaryKeySelective" parameterType="com.qyj.store.entity.QyjProductEntity">
 		update qyj_product
+		<trim suffix=",">
 		<set>
 			<if test="title != null">
 				title = #{title,jdbcType=VARCHAR},
@@ -86,30 +87,26 @@
 			<if test="updateTime != null">
 				update_time = #{updateTime,jdbcType=TIMESTAMP},
 			</if>
-			version = version + 1
 		</set>
-		where id = #{id,jdbcType=BIGINT} and version=#{version}
+		</trim>
+		where id = #{id,jdbcType=BIGINT}
 	</update>
 
-	<update id="updateByPrimaryKey" parameterType="com.qyj.store.entity.QyjProductEntity">
+	<!--更新在页面上编辑的产品-->
+	<update id="updateProductEdit" parameterType="com.qyj.store.entity.QyjProductEntity">
 		update qyj_product set title = #{title,jdbcType=VARCHAR},
 			price = #{price,jdbcType=DECIMAL},
 			product_type = #{productType,jdbcType=VARCHAR},
-			product_status = #{productStatus,jdbcType=VARCHAR},
-			number = #{number,jdbcType=INTEGER},
-			sold_number = #{soldNumber},
 			product_unit = #{productUnit},
 			remark = #{remark},
-			create_user = #{createUser,jdbcType=BIGINT},
-			create_time = #{createTime,jdbcType=TIMESTAMP},
 			update_user = #{updateUser,jdbcType=INTEGER},
-			update_time = #{updateTime,jdbcType=TIMESTAMP},
-			version = version + 1
-		where id = #{id,jdbcType=BIGINT} and version=#{version}
+			update_time = #{updateTime,jdbcType=TIMESTAMP}
+		where id = #{id,jdbcType=BIGINT}
 	</update>
 
 	<!-- 查询条件 -->
 	<sql id="condition_sql">
+		is_del = 0
 		<if test="id != null">
 			and id = #{id}
 		</if>
@@ -161,5 +158,11 @@
 			update qyj_product set number = number + ${item.number}, sold_number = sold_number + ${item.soldNumber},
 					unpay_number = unpay_number + ${item.unpayNumber} where id = ${item.id}
 		</foreach>
+	</update>
+
+	<!--删除产品，假删除-->
+	<update id="deleteProduct">
+		update qyj_product set is_del = 1, del_user = #{userId}, del_time = now()
+		where id = #{productId}
 	</update>
 </mapper>
