@@ -1,5 +1,6 @@
 package com.qyj.store.service;
 
+import com.qyj.common.page.ResultBean;
 import com.qyj.store.entity.SysMenuModel;
 
 import java.util.List;
@@ -50,5 +51,12 @@ public interface SysMenuService {
      * @return
      */
     List<SysMenuModel> listMenuByUserId(Long userId);
+
+    /**
+     * 删除菜单及其子孙菜单
+     * @param menuId
+     * @return
+     */
+    ResultBean deleteMenuAndChild(Long menuId) throws Exception;
 
 }

@@ -10,9 +10,9 @@ public class TreeNode {
 	}
 
 	// 节点id
-	private Long id;
+	private Long key;
 	// 要显示的文本
-	private String text;
+	private String title;
 	// 节点状态'closed'或'open'
 	private TreeNodeState state;
 	// 节点是否被选中
@@ -25,37 +25,37 @@ public class TreeNode {
 	public TreeNode() {
 	}
 
-	public TreeNode(Long id, String text) {
-		this.id = id;
-		this.text = text;
+	public TreeNode(Long key, String title) {
+		this.key = key;
+		this.title = title;
 	}
 
 	/**
-	 * @return the id
+	 * @return the key
 	 */
-	public Long getId() {
-		return id;
+	public Long getKey() {
+		return key;
 	}
 
 	/**
-	 * @param id the id to set
+	 * @param key the key to set
 	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setKey(Long key) {
+		this.key = key;
 	}
 
 	/**
-	 * @return the text
+	 * @return the title
 	 */
-	public String getText() {
-		return text;
+	public String getTitle() {
+		return title;
 	}
 
 	/**
-	 * @param text the text to set
+	 * @param title the title to set
 	 */
-	public void setText(String text) {
-		this.text = text;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	/**

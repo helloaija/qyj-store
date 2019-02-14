@@ -22,7 +22,7 @@ public class TreeUtil {
 			menuModel = sysMenuList.get(i);
 
 			if (menuModel.getParentId() != null
-					&& (menuModel.getParentId().toString().equals(parentNode.getId().toString()))) {
+					&& (menuModel.getParentId().toString().equals(parentNode.getKey().toString()))) {
 				children.add(loadTreeNode(convertModelToNode(menuModel), sysMenuList));
 			}
 		}
@@ -41,8 +41,7 @@ public class TreeUtil {
 		TreeNode node = new TreeNode(id, text);
 		node.setChecked(menuModel.getChecked());
 		
-		Map<String, String> attributesMap = new HashMap<String, String>();
-		attributesMap.put("type", menuModel.getMenuType());
+		Map<String, String> attributesMap = new HashMap<>();
 		node.setAttributes(attributesMap);
 
 		return node;

@@ -3,6 +3,7 @@ package com.qyj.store.dao;
 import java.util.List;
 
 import com.qyj.store.entity.SysMenuModel;
+import org.apache.ibatis.annotations.Param;
 
 public interface SysMenuMapper {
 	
@@ -46,5 +47,12 @@ public interface SysMenuMapper {
 	 * @return
 	 */
 	List<SysMenuModel> listMenuByUserId(Long userId);
-	
+
+	/**
+	 * 删除菜单列表
+	 * @param menuIdList
+	 * @return
+	 */
+	int deleteMenuList(@Param("idList") List<Long> menuIdList);
+
 }

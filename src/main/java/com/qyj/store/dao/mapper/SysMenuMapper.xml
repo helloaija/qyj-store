@@ -100,7 +100,7 @@
 	<!-- 更新菜单 -->
 	<update id="updateMenu" parameterType="com.qyj.store.entity.SysMenuModel">
 		update sys_menu set name = #{name}, menuType = #{menuType}, menuCode = #{menuCode}, sortNumber = #{sortNumber},
-			remark = #{remark}, updateTime = #{updateTime}, updateUser = #{updateUser}, url = #{url}
+			remark = #{remark}, updateTime = #{updateTime}, updateUser = #{updateUser}, url = #{url}, `status` = #{status}
 		where id = #{id}
 	</update>
 	
@@ -114,5 +114,9 @@
 		select * from sys_menu m left join sys_relation rm on m.id = rm.relation_id left join sys_relation ur on ur.relation_id = rm.main_id
 		where rm.relation_type = "ROLEMENU" and ur.relation_type = "USERROLE" and ur.main_id = #{userId};
 	</select>
-	
+
+	<!-- 删除菜单列表 -->
+	<delete id="deleteMenuList" parameterType="java.util.List">
+		delete from sys_menu where id in (<foreach collection="idList" item="item" separator=",">#{item}</foreach>);
+	</delete>
 </mapper> 
