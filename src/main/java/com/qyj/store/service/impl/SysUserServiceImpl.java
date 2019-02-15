@@ -144,7 +144,7 @@ public class SysUserServiceImpl implements SysUserService {
         queryUser.setUserName(userModel.getUserName());
         List<SysUserModel> userModelList = sysUserMapper.querySysUserList(queryUser, new PageParam());
         if (!Utils.isEmptyCollection(userModelList)) {
-            return resultBean.init("0002", "用户名已经存在！");
+            return resultBean.init("0002", "用户名[" + userModel.getUserName() + "]已经存在！");
         }
 
         // 默认启用
@@ -196,7 +196,7 @@ public class SysUserServiceImpl implements SysUserService {
         List<SysUserModel> userModelList = sysUserMapper.querySysUserList(queryUser, new PageParam());
         if (!Utils.isEmptyCollection(userModelList)) {
             if (userModelList.size() != 1 || userModelList.get(0).getId().longValue() != userModel.getId().longValue()) {
-                return resultBean.init("0002", "用户名已经存在！");
+                return resultBean.init("0002", "用户名[" + userModel.getUserName() + "]已经存在！");
             }
         }
 
@@ -293,28 +293,30 @@ public class SysUserServiceImpl implements SysUserService {
             // 查询用户关联的角色id
             List<SysRelationEntity> relationList = sysRelationMapper.listRelationByModel(relationEntity);
 
-            Set<Long> roleIdSet = new HashSet<>();
-            for (SysRelationEntity relation : relationList) {
-                roleIdSet.add(relation.getRelationId());
-            }
+            // Set<Long> roleIdSet = new HashSet<>();
+            // for (SysRelationEntity relation : relationList) {
+            //     roleIdSet.add(relation.getRelationId());
+            // }
+            //
+            // List<JSONObject> roleJsonList = new ArrayList<>();
+            // for (SysRoleModel role : roleList) {
+            //     JSONObject roleJson = (JSONObject) JSON.toJSON(role);
+            //     if (roleIdSet.contains(role.getId())) {
+            //         // 如果用户选择了该角色，就把改角色标记成已选择selected:true
+            //         roleJson.put("selected", true);
+            //     }
+            //     roleJsonList.add(roleJson);
+            // }
 
-            List<JSONObject> roleJsonList = new ArrayList<>();
-            for (SysRoleModel role : roleList) {
-                JSONObject roleJson = (JSONObject) JSON.toJSON(role);
-                if (roleIdSet.contains(role.getId())) {
-                    // 如果用户选择了该角色，就把改角色标记成已选择selected:true
-                    roleJson.put("selected", true);
-                }
-                roleJsonList.add(roleJson);
+            if (relationList != null && !relationList.isEmpty()) {
+                // 默认一个用户只能有一个角色
+                dataMap.put("roleId", relationList.get(0).getRelationId());
             }
-
-            dataMap.put("role", roleJsonList);
             dataMap.put("user", userModel);
-
-            return new ResultBean("0000", "获取用户角色成功", dataMap);
         }
 
-        dataMap.put("role", roleList);
+        dataMap.put("roleList", roleList);
+
         return new ResultBean("0000", "获取用户角色成功", dataMap);
     }
 

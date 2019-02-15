@@ -6,6 +6,7 @@ import com.qyj.common.page.ResultBean;
 import com.qyj.store.common.constant.CommonConstant;
 import com.qyj.store.common.enums.CommonEnums;
 import com.qyj.store.common.util.SessionUtil;
+import com.qyj.store.config.QyjUserDetails;
 import com.qyj.store.controller.BaseController;
 import com.qyj.store.entity.SysRoleModel;
 import com.qyj.store.entity.SysUserModel;
@@ -15,6 +16,7 @@ import com.qyj.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -81,9 +83,10 @@ public class UserController extends BaseController {
 	@RequestMapping(value = "/addUser", method = RequestMethod.POST)
 	public ResultBean addUser(SysUserModel userModel, HttpServletRequest request,
                               @RequestParam(value = "roleIds", required = false) Long... roleIds) {
-        SysUserBean userBean = (SysUserBean) SessionUtil.getAttribute(request, CommonConstant.SESSION_USER);
-        userModel.setUpdateUser(userBean.getId());
-        userModel.setCreateUser(userBean.getId());
+        QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        userModel.setUpdateUser(userDetails.getUserId());
+        userModel.setCreateUser(userDetails.getUserId());
         userModel.setCreateTime(new Date());
         userModel.setUpdateTime(new Date());
 
@@ -101,8 +104,8 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/updateUser", method = RequestMethod.POST)
     public ResultBean updateUser(SysUserModel userModel, HttpServletRequest request,
                               @RequestParam(value = "roleIds", required = false) Long... roleIds) {
-        SysUserBean userBean = (SysUserBean) SessionUtil.getAttribute(request, CommonConstant.SESSION_USER);
-        userModel.setUpdateUser(userBean.getId());
+        QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        userModel.setUpdateUser(userDetails.getUserId());
         userModel.setUpdateTime(new Date());
         // 这些数据不更新
         userModel.setLastIp(null);
@@ -136,9 +139,9 @@ public class UserController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/updateUserEnable", method = RequestMethod.POST)
     public ResultBean updateUserEnable(Long userId, HttpServletRequest request, String enable) {
-        SysUserBean userBean = (SysUserBean) SessionUtil.getAttribute(request, CommonConstant.SESSION_USER);
+        QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         logger.info("updateUserEnable message. userId={}, enable={}, optUserId={}, optUserName={}",
-                userId, enable, userBean.getId(),userBean.getUserName());
+                userId, enable, userDetails.getUserId(), userDetails.getUsername());
 
         if (userId == null) {
             return new ResultBean("0002", "用户id为空！");
