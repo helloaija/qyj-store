@@ -124,7 +124,7 @@
 		</if>
 		<!-- Like query -->
 		<if test="title != null and title != ''">
-			and title like CONCAT(CONCAT('%', #{title}), '%')
+			and title like CONCAT('%', #{title}, '%')
 		</if>
 	</sql>
 	
