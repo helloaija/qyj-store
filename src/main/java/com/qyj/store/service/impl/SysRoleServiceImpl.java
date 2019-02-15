@@ -183,7 +183,17 @@ public class SysRoleServiceImpl implements SysRoleService {
 		// 查询角色关联的菜单id
 		List<SysRelationEntity> relationList = sysRelationMapper.listRelationByModel(relationEntity);
 
-		Set<Long> menuIdSet = new HashSet<Long>();
+		Map<Long, SysMenuModel> menuMap = new HashMap<>();
+		for (SysMenuModel model : menuList) {
+			menuMap.put(model.getId(), model);
+		}
+
+		Map<Long, SysMenuModel> parentMenuMap = new HashMap<>();
+		for (SysMenuModel model : menuList) {
+			parentMenuMap.put(model.getId(), menuMap.get(model.getParentId()));
+		}
+
+		Set<Long> menuIdSet = new HashSet<>();
 		for (SysRelationEntity entiry : relationList) {
 			menuIdSet.add(entiry.getRelationId());
 		}
@@ -194,14 +204,16 @@ public class SysRoleServiceImpl implements SysRoleService {
 			}
 		}
 
+		for (Long id: menuIdSet) {
+			if (parentMenuMap.get(id) != null) {
+				parentMenuMap.get(id).setChecked(false);
+			}
+		}
+
 		TreeNode rootNode = new TreeNode(new Long(0), "根目录");
 		TreeUtil.loadTreeNode(rootNode, menuList);
 		List<TreeNode> tree = new ArrayList<>();
 		tree.add(rootNode);
-
-		if (!menuIdSet.isEmpty()) {
-			rootNode.setChecked(true);
-		}
 
 		resultMap.put("menu", tree);
 
