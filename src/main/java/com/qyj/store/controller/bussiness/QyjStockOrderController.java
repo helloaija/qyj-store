@@ -6,6 +6,7 @@ import com.qyj.common.page.ResultBean;
 import com.qyj.common.utils.CommonEnums.OrderStatusEnum;
 import com.qyj.store.common.constant.CommonConstant;
 import com.qyj.store.common.util.SessionUtil;
+import com.qyj.store.config.QyjUserDetails;
 import com.qyj.store.controller.BaseController;
 import com.qyj.store.entity.QyjStockOrderEntity;
 import com.qyj.store.service.QyjOrderService;
@@ -15,6 +16,7 @@ import com.qyj.store.vo.SysUserBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -87,14 +89,14 @@ public class QyjStockOrderController extends BaseController {
 	public ResultBean addStockOrder(QyjStockOrderEntity stockOrder, HttpServletRequest request,
 									   HttpServletResponse response) {
 		try {
-			SysUserBean userBean = (SysUserBean) SessionUtil.getAttribute(request, CommonConstant.SESSION_USER);
+			QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 			if (stockOrder == null) {
 				return new ResultBean("0001", "相关参数为空", null);
 			}
 
-			stockOrder.setCreateUser(userBean.getId());
-			stockOrder.setUpdateUser(userBean.getId());
+			stockOrder.setCreateUser(userDetails.getUserId());
+			stockOrder.setUpdateUser(userDetails.getUserId());
 
 			return stockOrderService.addStockOrder(stockOrder);
 		} catch (Exception e) {
