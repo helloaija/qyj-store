@@ -42,6 +42,7 @@ public class QyjProductController extends BaseController {
     @RequestMapping("/listProductPage")
     public ResultBean listProductPage(HttpServletRequest request, HttpServletResponse response) throws Exception {
         PageParam pageParam = this.initPageParam(request);
+        String id = request.getParameter("id");
         // 产品标题
         String productTitle = request.getParameter("title");
         // 产品类型
@@ -51,7 +52,8 @@ public class QyjProductController extends BaseController {
         // 创建结束时间
         String createTimeEnd = request.getParameter("createTimeEnd");
         Map<String, Object> paramMap = new HashMap<String, Object>();
-        paramMap.put("title", productTitle);
+        paramMap.put("id", id);
+        paramMap.put("title_like", productTitle);
         paramMap.put("productType", productType);
         paramMap.put("createTimeBegin", createTimeBegin);
         paramMap.put("createTimeEnd", createTimeEnd);

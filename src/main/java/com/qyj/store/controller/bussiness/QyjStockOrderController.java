@@ -33,145 +33,119 @@ import java.util.Map;
 /**
  * 控制器-进货订单管理
  * @author CTF_stone
- *
  */
 @Controller
 @RequestMapping("/admin/stockOrder")
 public class QyjStockOrderController extends BaseController {
 
-	private static final Logger logger = LoggerFactory.getLogger(QyjStockOrderController.class);
+    private static final Logger logger = LoggerFactory.getLogger(QyjStockOrderController.class);
 
-	@Autowired
-	private QyjStockOrderService stockOrderService;
+    @Autowired
+    private QyjStockOrderService stockOrderService;
 
-	/**
-	 * 获取进货订单分页数据信息
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/listStockOrderPage", method = RequestMethod.GET)
-	public ResultBean listStockOrderPage(HttpServletRequest request, HttpServletResponse response) {
-		PageParam pageParam = this.initPageParam(request);
-		// 订单状态
-		String orderStatus = request.getParameter("orderStatus");
-		// 订单编号
-		String orderNumber = request.getParameter("orderNumber");
-		// 创建开始时间
-		String createTimeBegin = request.getParameter("createTimeBegin");
-		// 创建结束时间
-		String createTimeEnd = request.getParameter("createTimeEnd");
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		paramMap.put("orderStatus", orderStatus);
-		paramMap.put("likeOrderNumber", orderNumber);
-		paramMap.put("createTimeBegin", createTimeBegin);
-		paramMap.put("createTimeEnd", createTimeEnd);
-		try {
-			pageParam.setOrderByCondition("create_time desc");
-			PageBean pageBean = stockOrderService.listStockOrderAndProductPage(pageParam, paramMap);
-			return new ResultBean("0000", "请求成功", pageBean);
-		} catch (Exception e) {
-			logger.error("listNewsInfoPage error", e);
-			return new ResultBean("0001", "请求异常:" + e.getMessage(), e);
-		}
-	}
+    /**
+     * 获取进货订单分页数据信息
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/listStockOrderPage", method = RequestMethod.GET)
+    public ResultBean listStockOrderPage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        PageParam pageParam = this.initPageParam(request);
+        // 订单状态
+        String orderStatus = request.getParameter("orderStatus");
+        // 订单编号
+        String orderNumber = request.getParameter("orderNumber");
+        // 创建开始时间
+        String createTimeBegin = request.getParameter("createTimeBegin");
+        // 创建结束时间
+        String createTimeEnd = request.getParameter("createTimeEnd");
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("orderStatus", orderStatus);
+        paramMap.put("likeOrderNumber", orderNumber);
+        paramMap.put("createTimeBegin", createTimeBegin);
+        paramMap.put("createTimeEnd", createTimeEnd);
+        pageParam.setOrderByCondition("create_time desc");
+        PageBean pageBean = stockOrderService.listStockOrderAndProductPage(pageParam, paramMap);
+        return new ResultBean("0000", "请求成功", pageBean);
+    }
 
-	/**
-	 * 添加进货单
-	 * @param stockOrder
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value="/addStockOrder", method = RequestMethod.POST)
-	public ResultBean addStockOrder(QyjStockOrderEntity stockOrder, HttpServletRequest request,
-									   HttpServletResponse response) {
-		try {
-			QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    /**
+     * 添加进货单
+     * @param stockOrder
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/addStockOrder", method = RequestMethod.POST)
+    public ResultBean addStockOrder(QyjStockOrderEntity stockOrder, HttpServletRequest request,
+                                    HttpServletResponse response) throws Exception {
+        QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-			if (stockOrder == null) {
-				return new ResultBean("0001", "相关参数为空", null);
-			}
+        if (stockOrder == null) {
+            return new ResultBean("0001", "相关参数为空", null);
+        }
 
-			stockOrder.setCreateUser(userDetails.getUserId());
-			stockOrder.setUpdateUser(userDetails.getUserId());
+        stockOrder.setCreateUser(userDetails.getUserId());
+        stockOrder.setUpdateUser(userDetails.getUserId());
 
-			return stockOrderService.addStockOrder(stockOrder);
-		} catch (Exception e) {
-			logger.error("addStockOrder error", e);
-			return new ResultBean("0001", "请求异常:" + e.getMessage(), e);
-		}
-	}
+        return stockOrderService.addStockOrder(stockOrder);
+    }
 
-	/**
-	 * 根据主键查询进货已经其商品
-	 * @param stockId
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping("/getStockOrderInfo")
-	public ResultBean getStockOrderInfo(Long stockId, HttpServletRequest request, HttpServletResponse response) {
-		try {
-			return stockOrderService.loadStockOrderAndProductByStockId(stockId);
-		} catch (Exception e) {
-			logger.error("getStockOrderInfo error", e);
-			return new ResultBean("0001", getExceptionMessage(e), e);
-		}
-	}
+    /**
+     * 根据主键查询进货已经其商品
+     * @param stockId
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/getStockOrderInfo")
+    public ResultBean getStockOrderInfo(Long stockId, HttpServletRequest request, HttpServletResponse response) {
+        return stockOrderService.loadStockOrderAndProductByStockId(stockId);
+    }
 
-	/**
-	 * 更新进货单
-	 * @param stockOrder
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value="/updateStockOrder", method = RequestMethod.POST)
-	public ResultBean updateStockOrder(QyjStockOrderEntity stockOrder, HttpServletRequest request,
-			HttpServletResponse response) {
-		try {
-			SysUserBean userBean = (SysUserBean) SessionUtil.getAttribute(request, CommonConstant.SESSION_USER);
+    /**
+     * 更新进货单
+     * @param stockOrder
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/updateStockOrder", method = RequestMethod.POST)
+    public ResultBean updateStockOrder(QyjStockOrderEntity stockOrder, HttpServletRequest request,
+                                       HttpServletResponse response) throws Exception {
+        QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-			if (stockOrder == null) {
-				return new ResultBean("0001", "相关参数为空", null);
-			}
+        if (stockOrder == null) {
+            return new ResultBean("0001", "相关参数为空", null);
+        }
 
-			stockOrder.setUpdateUser(userBean.getId());
+        stockOrder.setUpdateUser(userDetails.getUserId());
 
-			return stockOrderService.editStockOrder(stockOrder);
-		} catch (Exception e) {
-			logger.error("updateStockOrder error", e);
-			return new ResultBean("0001", getExceptionMessage(e), e);
-		}
-	}
+        return stockOrderService.editStockOrder(stockOrder);
+    }
 
-	/**
-	 * 删除进货单
-	 * @param stockId
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value="/deleteStockOrder", method = RequestMethod.POST)
-	public ResultBean deleteStockOrder(Long stockId, HttpServletRequest request, HttpServletResponse response) {
-		try {
-			SysUserBean userBean = (SysUserBean) SessionUtil.getAttribute(request, CommonConstant.SESSION_USER);
-			logger.info("deleteStockOrder userId = {}, stockId = {}", userBean.getId(), stockId);
+    /**
+     * 删除进货单
+     * @param stockId
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/deleteStockOrder", method = RequestMethod.POST)
+    public ResultBean deleteStockOrder(Long stockId, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        logger.info("deleteStockOrder userId = {}, stockId = {}", userDetails.getUserId(), stockId);
 
-			if (stockId == null) {
-				return new ResultBean("0002", "相关参数为空", null);
-			}
+        if (stockId == null) {
+            return new ResultBean("0002", "相关参数为空", null);
+        }
 
-			return stockOrderService.deleteStockOrder(stockId);
-		} catch (Exception e) {
-			logger.error("deleteStockOrder error", e);
-			return new ResultBean("0001", getExceptionMessage(e), e);
-		}
-	}
+        return stockOrderService.deleteStockOrder(stockId);
+    }
 }

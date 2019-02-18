@@ -107,8 +107,11 @@
 	<!-- 查询条件 -->
 	<sql id="condition_sql">
 		is_del = 0
-		<if test="id != null">
+		<if test="id != null and id != ''">
 			and id = #{id}
+		</if>
+		<if test="title != null and title != ''">
+			and title = #{title}
 		</if>
 		<if test="productType != null and productType != ''">
 			and product_type = #{productType}
@@ -123,8 +126,8 @@
 			<![CDATA[and create_time < DATE_FORMAT(date_add(#{createTimeEnd,jdbcType=TIMESTAMP}, interval 1 day), '%Y-%c-%d')]]>
 		</if>
 		<!-- Like query -->
-		<if test="title != null and title != ''">
-			and title like CONCAT('%', #{title}, '%')
+		<if test="title_like != null and title_like != ''">
+			and title like CONCAT('%', #{title_like}, '%')
 		</if>
 	</sql>
 	

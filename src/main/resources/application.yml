@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://stl.server.com:3306/qyj-store?useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://stl.server.com:3306/qyj-store?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver
