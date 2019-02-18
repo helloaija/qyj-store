@@ -196,6 +196,7 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
                 updateList.add(stockProductEntity);
             }
 
+            // 新增的和更新的库存都加，旧的都减
             QyjProductEntity productEntity = productService.getUpdateNumberProductEntity(stockProductEntity.getProductId(),
                     stockProductEntity.getNumber(), 0, 0);
             productEntityList.add(productEntity);
@@ -206,6 +207,7 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
                 deleteList.add(stockProductEntity.getId());
             }
 
+            // 旧的不管是更新的还是删除的都库存减，因为上面的新增和更新都库存加
             QyjProductEntity productEntity = productService.getUpdateNumberProductEntity(
                     stockProductEntity.getProductId(), -1 * stockProductEntity.getNumber(), 0, 0);
             productEntityList.add(productEntity);

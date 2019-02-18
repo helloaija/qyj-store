@@ -46,10 +46,10 @@
 		<if test="likeOrderNumber != null and likeOrderNumber != ''">
 			and order_number like concat(concat('%',#{likeOrderNumber}),'%')
 		</if>
-		<if test="createTimeBegin != null">
+		<if test="createTimeBegin != null and createTimeBegin != ''">
 			<![CDATA[and create_time >= #{createTimeBegin}]]>
 		</if>
-		<if test="createTimeEnd != null">
+		<if test="createTimeEnd != null and createTimeEnd != ''">
 			<![CDATA[and create_time < DATE_FORMAT(date_add(#{createTimeEnd,jdbcType=TIMESTAMP}, interval 1 day), '%Y-%c-%d')]]>
 		</if>
 	</sql>
@@ -108,6 +108,9 @@
 			<if test="createUser != null">
 				create_user = #{createUser},
 			</if>
+				<if test="remark != null and remark != ''">
+					remark = #{remark},
+				</if>
 			</trim>
 		</set>
 		where id = #{id,jdbcType=BIGINT}

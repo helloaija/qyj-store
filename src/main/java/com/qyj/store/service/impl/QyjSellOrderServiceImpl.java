@@ -28,6 +28,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 服务层接口实现-我的订单
@@ -42,6 +44,11 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
     private QyjSellProductMapper sellProductMapper;
     private QyjProductMapper productMapper;
     private QyjProductService productService;
+
+    /**
+     * 锁-编辑销售单
+     */
+    private static final Lock LOCK_SELLORDER = new ReentrantLock();
 
     /**
      * 获取订单分页数据
@@ -107,8 +114,8 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
         // 获取订单的产品数量，用来更新产品储量
         List<QyjProductEntity> productEntityList = new ArrayList<>();
 
-        List<QyjSellProductEntity> SellProductEntityList = sellOrder.getSellProductList();
-        for (QyjSellProductEntity SellProductEntity : SellProductEntityList) {
+        List<QyjSellProductEntity> sellProductEntityList = sellOrder.getSellProductList();
+        for (QyjSellProductEntity SellProductEntity : sellProductEntityList) {
             // 设置产品关联订单
             SellProductEntity.setSellId(sellOrder.getId());
             SellProductEntity.setCreateTime(new Date());
@@ -124,8 +131,16 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
             throw new ValidException("添加销售单产品失败");
         }
 
-        // 更新库存数量
-        productMapper.updateProductNumberBatch(productEntityList);
+        if (LOCK_SELLORDER.tryLock()) {
+            try {
+                // 更新库存数量
+                productMapper.updateProductNumberBatch(productEntityList);
+
+                this.validSellProduct(sellProductEntityList);
+            } finally {
+                LOCK_SELLORDER.unlock();
+            }
+        }
 
         return resultBean.init("0000", "添加销售单成功");
     }
@@ -177,32 +192,43 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
         // 获取订单的产品数量，用来更新产品储量
         List<QyjProductEntity> productEntityList = new ArrayList<>();
 
-        Set<Long> SellProductIdSet = new HashSet<>();
-        List<QyjSellProductEntity> SellProductEntityList = sellOrder.getSellProductList();
-        // 对页面上编辑的产品分类，没有id的就是新增，有id就是编辑
-        for (QyjSellProductEntity SellProductEntity : SellProductEntityList) {
-            SellProductIdSet.add(SellProductEntity.getId());
-            if (SellProductEntity.getId() == null) {
-                SellProductEntity.setSellId(sellOrder.getId());
-                SellProductEntity.setCreateTime(new Date());
-                addList.add(SellProductEntity);
-            } else {
-                updateList.add(SellProductEntity);
-            }
+        Map<Long, QyjSellProductEntity> updateSellProductMap = new HashMap<>();
+        List<QyjSellProductEntity> sellProductEntityList = sellOrder.getSellProductList();
 
-            QyjProductEntity productEntity = productService.getUpdateNumberProductEntity(SellProductEntity.getProductId(),
-                    -1 * SellProductEntity.getNumber(), SellProductEntity.getNumber(), 0);
-            productEntityList.add(productEntity);
+        for (QyjSellProductEntity sellProductEntity : sellProductEntityList) {
+            if (sellProductEntity.getId() == null) {
+                // 对页面上编辑的产品，没有id的就是新增
+                sellProductEntity.setSellId(sellOrder.getId());
+                sellProductEntity.setCreateTime(new Date());
+                addList.add(sellProductEntity);
+
+                // 新增的，库存减，已售加
+                QyjProductEntity productEntity = productService.getUpdateNumberProductEntity(sellProductEntity.getProductId(),
+                        -1 * sellProductEntity.getNumber(), sellProductEntity.getNumber(), 0);
+                productEntityList.add(productEntity);
+            } else {
+                // 对页面上编辑的产品，有id的就是更新
+                updateSellProductMap.put(sellProductEntity.getId(), sellProductEntity);
+            }
         }
 
-        for (QyjSellProductEntity SellProductEntity : oldSellProductList) {
-            if (!SellProductIdSet.contains(SellProductEntity.getId())) {
-                deleteList.add(SellProductEntity.getId());
+        for (QyjSellProductEntity sellProductEntity : oldSellProductList) {
+            if (updateSellProductMap.containsKey(sellProductEntity.getId())) {
+                // 旧的产品存在于更新的产品，就是需要更新的
+                updateList.add(updateSellProductMap.get(sellProductEntity.getId()));
+                // 更新的，库存加旧值、减新值，已售减旧值加新值
+                int number = sellProductEntity.getNumber() - updateSellProductMap.get(sellProductEntity.getId()).getNumber();
+                QyjProductEntity productEntity = productService.getUpdateNumberProductEntity(
+                        sellProductEntity.getProductId(), number, -1 * number, 0);
+                productEntityList.add(productEntity);
+            } else {
+                // 旧的产品不存在于更新的产品，就是需要删除的
+                deleteList.add(sellProductEntity.getId());
+                // 删除的，库存加，已售减
+                QyjProductEntity productEntity = productService.getUpdateNumberProductEntity(
+                        sellProductEntity.getProductId(), sellProductEntity.getNumber(), -1 * sellProductEntity.getNumber(), 0);
+                productEntityList.add(productEntity);
             }
-
-            QyjProductEntity productEntity = productService.getUpdateNumberProductEntity(
-                    SellProductEntity.getProductId(), SellProductEntity.getNumber(), -1 * SellProductEntity.getNumber(), 0);
-            productEntityList.add(productEntity);
         }
 
         if (!addList.isEmpty()) {
@@ -214,9 +240,16 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
         if (!deleteList.isEmpty()) {
             sellProductMapper.deleteSellProductList(deleteList);
         }
+        if (LOCK_SELLORDER.tryLock()) {
+            try {
+                // 更新库存数量
+                productMapper.updateProductNumberBatch(productEntityList);
 
-        // 更新库存数量
-        productMapper.updateProductNumberBatch(productEntityList);
+                this.validSellProduct(sellProductEntityList);
+            } finally {
+                LOCK_SELLORDER.unlock();
+            }
+        }
 
         return resultBean.init("0000", "更新销售单成功");
     }
@@ -247,11 +280,11 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
         List<QyjSellProductEntity> SellProductList = sellProductMapper.listSellProductBySellId(sellId);
         for (QyjSellProductEntity SellProductEntity : SellProductList) {
             QyjProductEntity productEntity = productService.getUpdateNumberProductEntity(SellProductEntity.getProductId(),
-                    -1 * SellProductEntity.getNumber(), 0, 0);
+                    1 * SellProductEntity.getNumber(), -1 * SellProductEntity.getNumber(), 0);
             productEntityList.add(productEntity);
         }
 
-       optNum = sellProductMapper.deleteSellProductBySellId(sellId);
+        optNum = sellProductMapper.deleteSellProductBySellId(sellId);
         if (optNum == 0) {
             throw new ValidException("删除销售单产品失败");
         }
@@ -319,6 +352,41 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
         }
 
         return true;
+    }
+
+    /**
+     * 校验销售产品数量，如果产品数量为负数就是数量不够
+     * @param SellProductEntityList
+     * @throws Exception
+     */
+    private void validSellProduct(List<QyjSellProductEntity> SellProductEntityList) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        for (QyjSellProductEntity SellProductEntity : SellProductEntityList) {
+            if (sb.length() != 0) {
+                sb.append(",");
+            }
+            sb.append(SellProductEntity.getProductId());
+        }
+        sb.insert(0, " and id in (");
+        sb.append(") ");
+        Map<String, Object> queryParams = new HashMap<>();
+        PageParam pageParam = new PageParam();
+        pageParam.setQueryCondition(sb.toString());
+        pageParam.setPaging(false);
+        queryParams.put("pageParam", pageParam);
+        List<QyjProductEntity> productList = productMapper.listProduct(queryParams);
+
+        sb = new StringBuilder();
+        for (QyjProductEntity entity : productList) {
+            if (entity.getNumber() < 0) {
+                sb.append("[");
+                sb.append(entity.getTitle());
+                sb.append("]库存数量不足；<br/>");
+            }
+        }
+        if (sb.length() > 0) {
+            throw new ValidException(sb.toString());
+        }
     }
 
     @Autowired

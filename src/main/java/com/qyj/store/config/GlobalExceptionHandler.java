@@ -1,5 +1,6 @@
 package com.qyj.store.config;
 
+import com.qyj.common.exception.ValidException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -7,7 +8,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.ValidationException;
 
 /**
  * 全局异常处理
@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public String errorHandler(Exception e, HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        if (e instanceof ValidationException) {
+        if (e instanceof ValidException) {
             // 自定义异常
             return e.getMessage();
         }
