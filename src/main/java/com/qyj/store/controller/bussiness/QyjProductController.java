@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,7 +40,7 @@ public class QyjProductController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/listProductPage")
+    @RequestMapping(value = "/listProductPage", method = RequestMethod.GET)
     public ResultBean listProductPage(HttpServletRequest request, HttpServletResponse response) throws Exception {
         PageParam pageParam = this.initPageParam(request);
         String id = request.getParameter("id");
@@ -70,7 +71,7 @@ public class QyjProductController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/getProductInfo")
+    @RequestMapping(value = "/getProductInfo", method = RequestMethod.GET)
     public ResultBean getProductInfo(Long productId, HttpServletRequest request, HttpServletResponse response) throws Exception {
         QyjProductBean product = productService.selectProductInfo(productId);
         return new ResultBean("0000", "请求成功", product);
@@ -84,7 +85,7 @@ public class QyjProductController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/saveProductInfo")
+    @RequestMapping(value = "/saveProductInfo", method = RequestMethod.POST)
     public ResultBean saveProductInfo(QyjProductEntity productEntity, HttpServletRequest request,
                                       HttpServletResponse response) throws Exception {
         QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -113,7 +114,7 @@ public class QyjProductController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/delProductInfo")
+    @RequestMapping(value = "/delProductInfo", method = RequestMethod.POST)
     public ResultBean delProductInfo(Long productId, HttpServletRequest request, HttpServletResponse response) {
         QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return productService.deleteProduct(productId, userDetails.getUserId());

@@ -22,17 +22,27 @@ import java.util.List;
 public class QyjAccessDecisionManager implements AccessDecisionManager {
     @Override
     public void decide(Authentication authentication, Object o, Collection<ConfigAttribute> collection) throws AccessDeniedException, InsufficientAuthenticationException {
-        if ("anonymousUser".equals(authentication.getPrincipal())) {
-            return;
+        if (!(authentication.getPrincipal() instanceof QyjUserDetails)) {
+            throw new AccessDeniedException("权限不足");
         }
+        String url = ((FilterInvocation) o).getRequest().getRequestURI().replaceAll("/", "");
+
+
+        String[] allowUrls = new String[]{"admin/user/getUserInfo", "admin/user/logout"};
+        for (String allowUrl : allowUrls) {
+            if (url.equals(allowUrl.replaceAll("/", ""))) {
+                return;
+            }
+        }
+
         QyjUserDetails userDetails = (QyjUserDetails) authentication.getPrincipal();
         // 用户拥有的访问路径
         List<SysMenuModel> menuList = userDetails.getMenuList();
 
         boolean notContain = true;
-        String url = ((FilterInvocation) o).getRequest().getRequestURI();
+
         for (SysMenuModel menu : menuList) {
-            if (url.equals(menu.getUrl())) {
+            if (url.equals(menu.getUrl().replaceAll("/", ""))) {
                 notContain = false;
                 break;
             }

@@ -67,8 +67,8 @@ public class MenuController {
      * @param response
      * @return
      */
-    @RequestMapping("/getMenuById")
     @ResponseBody
+    @RequestMapping(value = "/getMenuById", method = RequestMethod.GET)
     public ResultBean getMenuById(Long menuId, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (menuId == null || menuId == 0) {
             return new ResultBean("0002", "菜单id为空", null);
@@ -89,7 +89,7 @@ public class MenuController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/addMenu")
+    @RequestMapping(value = "/addMenu", method = RequestMethod.POST)
     public ResultBean addMenu(SysMenuModel menuModel, HttpServletRequest request) throws Exception {
         QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -125,7 +125,7 @@ public class MenuController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/updateMenu")
+    @RequestMapping(value = "/updateMenu", method = RequestMethod.POST)
     public ResultBean updateMenu(SysMenuModel menuModel, HttpServletRequest request) throws Exception {
         QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -152,7 +152,7 @@ public class MenuController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/deleteMenu")
+    @RequestMapping(value = "/deleteMenu", method = RequestMethod.POST)
     public ResultBean deleteMenu(Long menuId, HttpServletRequest request) throws Exception {
         QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

@@ -102,7 +102,7 @@ public class QyjStockOrderController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/getStockOrderInfo")
+    @RequestMapping(value = "/getStockOrderInfo", method = RequestMethod.GET)
     public ResultBean getStockOrderInfo(Long stockId, HttpServletRequest request, HttpServletResponse response) {
         return stockOrderService.loadStockOrderAndProductByStockId(stockId);
     }

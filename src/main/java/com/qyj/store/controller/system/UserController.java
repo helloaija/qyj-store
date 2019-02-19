@@ -3,16 +3,17 @@ package com.qyj.store.controller.system;
 import com.qyj.common.page.PageBean;
 import com.qyj.common.page.PageParam;
 import com.qyj.common.page.ResultBean;
+import com.qyj.common.utils.StringUtils;
 import com.qyj.store.common.constant.CommonConstant;
 import com.qyj.store.common.enums.CommonEnums;
+import com.qyj.store.common.tree.TreeNode;
+import com.qyj.store.common.tree.TreeUtil;
 import com.qyj.store.common.util.SessionUtil;
 import com.qyj.store.config.QyjUserDetails;
 import com.qyj.store.controller.BaseController;
-import com.qyj.store.entity.SysRoleModel;
+import com.qyj.store.entity.SysMenuModel;
 import com.qyj.store.entity.SysUserModel;
 import com.qyj.store.service.SysUserService;
-import com.qyj.store.vo.SysUserBean;
-import com.qyj.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.*;
 
 /**
  * 用户信息控制器
@@ -161,6 +164,55 @@ public class UserController extends BaseController {
         return new ResultBean("0000", "删除用户成功！");
     }
 
+    /**
+     * 查询用户拥有的菜单
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getUserInfo", method = RequestMethod.GET)
+    public ResultBean getUserInfo(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<SysMenuModel> sysMenuList = userDetails.getMenuList();
+
+        Iterator<SysMenuModel> it = sysMenuList.iterator();
+        while (it.hasNext()) {
+            SysMenuModel menu = it.next();
+            if (!"MENU".equals(menu.getMenuType())) {
+                it.remove();
+            }
+        }
+
+        TreeNode rootNode = new TreeNode(new Long(0), "根目录");
+        TreeUtil.loadTreeNode(rootNode, sysMenuList);
+
+        List<TreeNode> tree = new ArrayList<>();
+        tree.add(rootNode);
+
+        SysUserModel user = new SysUserModel();
+        user.setUserName(userDetails.getUsername());
+
+        Map<String, Object> userInfoMap = new HashMap<>();
+        userInfoMap.put("menu", rootNode.getChildren());
+        userInfoMap.put("user", user);
+
+        return new ResultBean("0000", "获取成功", userInfoMap);
+    }
+
+    /**
+     * 清除session
+     * @param session
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public ResultBean logOut(HttpSession session) {
+        QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CommonConstant.USER_LOGIN_MAP.remove(userDetails.getUsername());
+        SessionUtil.removeSessionAll(session);
+        return new ResultBean("0000", "请求成功");
+    }
 
     @Autowired
     public void setSysUserService(SysUserService sysUserService) {

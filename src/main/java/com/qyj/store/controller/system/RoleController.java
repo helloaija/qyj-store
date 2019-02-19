@@ -46,7 +46,7 @@ public class RoleController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/loadRolePage")
+    @RequestMapping(value = "/loadRolePage", method = RequestMethod.GET)
     public ResultBean loadRolePage(HttpServletRequest request, HttpServletResponse response, SysRoleModel queryRole) {
         try {
             PageParam pageParam = initPageParam(request);
@@ -79,7 +79,7 @@ public class RoleController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/addRole")
+    @RequestMapping(value = "/addRole", method = RequestMethod.POST)
     public ResultBean addRole(HttpServletRequest request, HttpServletResponse response,
                               SysRoleModel roleModel, @RequestParam(value = "menuIds", required = false) Long... menuIds) throws Exception {
         QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

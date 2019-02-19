@@ -96,7 +96,7 @@ public class QyjSellOrderController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/getSellOrderInfo")
+    @RequestMapping(value = "/getSellOrderInfo", method = RequestMethod.GET)
     public ResultBean getSellOrderInfo(Long sellId, HttpServletRequest request, HttpServletResponse response) {
         return sellOrderService.loadSellOrderAndProductBySellId(sellId);
     }
