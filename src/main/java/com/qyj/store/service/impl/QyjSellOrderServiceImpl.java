@@ -135,7 +135,7 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
             try {
                 // 更新库存数量
                 productMapper.updateProductNumberBatch(productEntityList);
-
+                // 更新库存数据后校验库存数据，如果存在库存数量为空则回滚
                 this.validSellProduct(sellProductEntityList);
             } finally {
                 LOCK_SELLORDER.unlock();
@@ -244,7 +244,7 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
             try {
                 // 更新库存数量
                 productMapper.updateProductNumberBatch(productEntityList);
-
+                // 更新库存数据后校验库存数据，如果存在库存数量为空则回滚
                 this.validSellProduct(sellProductEntityList);
             } finally {
                 LOCK_SELLORDER.unlock();
