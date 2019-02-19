@@ -1,10 +1,12 @@
 package com.qyj.store.config;
 
+import com.qyj.store.entity.SysMenuModel;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -17,6 +19,7 @@ public class QyjUserDetails implements UserDetails, Serializable {
 	private String username;
 	private String password;
 	private Set<? extends GrantedAuthority> authorities;
+	private List<SysMenuModel> menuList;
 
 	/** 设置当前登录的token */
 	private String jwtToken;
@@ -82,5 +85,13 @@ public class QyjUserDetails implements UserDetails, Serializable {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public List<SysMenuModel> getMenuList() {
+		return menuList;
+	}
+
+	public void setMenuList(List<SysMenuModel> menuList) {
+		this.menuList = menuList;
 	}
 }

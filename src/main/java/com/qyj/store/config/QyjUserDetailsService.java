@@ -1,5 +1,6 @@
 package com.qyj.store.config;
 
+import com.qyj.store.dao.SysMenuMapper;
 import com.qyj.store.dao.SysUserMapper;
 import com.qyj.store.entity.SysUserModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ public class QyjUserDetailsService implements UserDetailsService {
 
     @Autowired
     private SysUserMapper sysUserMapper;
+    @Autowired
+    private SysMenuMapper sysMenuMapper;
 
     @Override
     public QyjUserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
@@ -30,6 +33,7 @@ public class QyjUserDetailsService implements UserDetailsService {
         userDetails.setUsername(userName);
         userDetails.setPassword(sysUserModel.getPassword());
         userDetails.setAuthorities(null);
+        userDetails.setMenuList(sysMenuMapper.listMenuByUserId(sysUserModel.getId()));
 
         return userDetails;
     }

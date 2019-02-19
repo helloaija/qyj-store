@@ -7,10 +7,12 @@ import com.qyj.store.common.constant.CommonConstant;
 import com.qyj.store.common.util.JwtTokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -28,6 +30,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private OncePerRequestFilter jwtAuthenticationTokenFilter;
+
+    @Autowired
+    private QyjAccessDecisionManager qyjAccessDecisionManager;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -63,7 +68,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             ResultBean resultBean = new ResultBean("0000", "登录成功", jwtToken);
             response.getWriter().write(JSON.toJSONString(resultBean));
         }).failureHandler((request, response, authentication) -> {
-            // response.setCharacterEncoding("UTF-8");
             // 登录失败
             response.getWriter().write(JSON.toJSONString(new ResultBean("0001", authentication.getMessage())));
         }).permitAll();
@@ -89,6 +93,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // 访问过滤
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http.authorizeRequests().withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
+            @Override
+            public <O extends FilterSecurityInterceptor> O postProcess(O o) {
+                o.setAccessDecisionManager(qyjAccessDecisionManager);
+                return o;
+            }
+        });
     }
 
 }
