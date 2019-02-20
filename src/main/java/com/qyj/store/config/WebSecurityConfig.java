@@ -58,7 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             response.getWriter().write(JSON.toJSONString(new ResultBean("0001", "用户未登录")));
         });
 
-        http.formLogin().loginProcessingUrl("/login").successHandler((request, response, authentication) -> {
+        http.formLogin().loginProcessingUrl("/admin/login").successHandler((request, response, authentication) -> {
             // 登录成功
             QyjUserDetails userDetails = (QyjUserDetails) authentication.getDetails();
             String jwtToken = JwtTokenUtils.generateToken(userDetails.getUsername());

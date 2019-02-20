@@ -23,7 +23,7 @@ public class QyjAccessDecisionManager implements AccessDecisionManager {
     @Override
     public void decide(Authentication authentication, Object o, Collection<ConfigAttribute> collection) throws AccessDeniedException, InsufficientAuthenticationException {
         if (!(authentication.getPrincipal() instanceof QyjUserDetails)) {
-            throw new AccessDeniedException("权限不足");
+           throw new AccessDeniedException("权限不足");
         }
         String url = ((FilterInvocation) o).getRequest().getRequestURI().replaceAll("/", "");
 
