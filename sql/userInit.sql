@@ -1,0 +1,2 @@
+
+INSERT INTO `qyj-store`.`sys_user`(`id`, `user_name`, `password`, `enable`, `real_name`, `card`, `tel_phone`, `email`, `qq`, `sex`, `address`, `last_time`, `last_ip`, `ip_addr`, `create_time`, `create_user`, `update_time`, `update_user`) VALUES (1, 'superadmin', 'E10ADC3949BA59ABBE56E057F20F883E', 'USABLE', '石同乐', '123456', '183769177', 'shitongle163', '978229', '1', '坪洲', now(), NULL, NULL, now(), 1, now(), 1);

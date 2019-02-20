@@ -25,9 +25,13 @@ public class QyjAccessDecisionManager implements AccessDecisionManager {
         if (!(authentication.getPrincipal() instanceof QyjUserDetails)) {
            throw new AccessDeniedException("权限不足");
         }
+        QyjUserDetails userDetails = (QyjUserDetails) authentication.getPrincipal();
+        if (userDetails.isSuperadmin()) {
+            // 超级用户拥有所有权限
+            return;
+        }
+
         String url = ((FilterInvocation) o).getRequest().getRequestURI().replaceAll("/", "");
-
-
         String[] allowUrls = new String[]{"admin/user/getUserInfo", "admin/user/logout"};
         for (String allowUrl : allowUrls) {
             if (url.equals(allowUrl.replaceAll("/", ""))) {
@@ -35,7 +39,6 @@ public class QyjAccessDecisionManager implements AccessDecisionManager {
             }
         }
 
-        QyjUserDetails userDetails = (QyjUserDetails) authentication.getPrincipal();
         // 用户拥有的访问路径
         List<SysMenuModel> menuList = userDetails.getMenuList();
 

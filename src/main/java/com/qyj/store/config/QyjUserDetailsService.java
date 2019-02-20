@@ -33,7 +33,11 @@ public class QyjUserDetailsService implements UserDetailsService {
         userDetails.setUsername(userName);
         userDetails.setPassword(sysUserModel.getPassword());
         userDetails.setAuthorities(null);
-        userDetails.setMenuList(sysMenuMapper.listMenuByUserId(sysUserModel.getId()));
+        if (userDetails.isSuperadmin()) {
+            userDetails.setMenuList(sysMenuMapper.querySysMenuList());
+        } else {
+            userDetails.setMenuList(sysMenuMapper.listMenuByUserId(sysUserModel.getId()));
+        }
 
         return userDetails;
     }

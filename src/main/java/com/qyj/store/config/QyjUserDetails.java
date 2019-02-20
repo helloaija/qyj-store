@@ -94,4 +94,9 @@ public class QyjUserDetails implements UserDetails, Serializable {
 	public void setMenuList(List<SysMenuModel> menuList) {
 		this.menuList = menuList;
 	}
+
+	public boolean isSuperadmin() {
+		// id为1是超级管理员，拥有全部菜单和权限
+		return 1 == this.getUserId();
+	}
 }
