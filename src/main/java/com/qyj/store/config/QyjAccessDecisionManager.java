@@ -45,7 +45,7 @@ public class QyjAccessDecisionManager implements AccessDecisionManager {
         boolean notContain = true;
 
         for (SysMenuModel menu : menuList) {
-            if (url.equals(menu.getUrl().replaceAll("/", ""))) {
+            if (menu.getUrl().replaceAll("/", "").contains(url)) {
                 notContain = false;
                 break;
             }

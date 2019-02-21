@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qyj.store.dao.QyjUserMapper">
+    <resultMap id="baseResultMap" type="com.qyj.store.entity.QyjUserEntity">
+        <id column="id" property="id"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="mobile_phone" jdbcType="VARCHAR" property="mobilePhone"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+    </resultMap>
+
+    <sql id="baseColumns">
+		id, user_name, mobile_phone, address, remark, create_time, create_user, update_time, update_user
+	</sql>
+
+    <sql id="condition">
+        <if test="id != null and id != ''">
+            and id = #{id}
+        </if>
+        <if test="userName != null and userName != ''">
+            and user_name = #{userName}
+        </if>
+        <if test="mobilePhone != null and mobilePhone != ''">
+            and mobile_phone = #{mobilePhone}
+        </if>
+        <if test="address != null and address != ''">
+            and address = #{address}
+        </if>
+        <if test="remark != null and remark != ''">
+            and remark = #{remark}
+        </if>
+        <if test="userNameLike != null and userNameLike != ''">
+            and user_name like concat('%', #{userNameLike}, '%')
+        </if>
+        <if test="mobilePhoneLike != null and mobilePhoneLike != ''">
+            and mobile_phone like concat('%', #{mobilePhoneLike}, '%')
+        </if>
+        <if test="createTimeBegin != null and createTimeBegin != ''">
+            <![CDATA[and create_time >= #{createTimeBegin}]]>
+        </if>
+        <if test="createTimeEnd != null and createTimeEnd != ''">
+            <![CDATA[and create_time < DATE_FORMAT(date_add(#{createTimeEnd,jdbcType=TIMESTAMP}, interval 1 day), '%Y-%c-%d')]]>
+        </if>
+    </sql>
+
+    <!-- 统计数据 -->
+    <select id="countUser" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(id) from qyj_user where 1=1
+        <include refid="condition"/>
+        <if test="pageParam != null">
+            ${pageParam.queryCondition}
+        </if>
+    </select>
+
+    <!-- 获取分页数据 -->
+    <select id="listUser" parameterType="java.util.Map" resultMap="baseResultMap">
+        select
+        <include refid="baseColumns"/>
+        from qyj_user where 1=1
+        <include refid="condition"/>
+        <if test="pageParam != null">
+            ${pageParam.queryCondition}
+            ${pageParam.orderByCondition}
+            ${pageParam.limit}
+        </if>
+    </select>
+
+    <!--根据用户id获取用户信息-->
+    <select id="getUserById" parameterType="java.lang.Long" resultMap="baseResultMap">
+        select
+        <include refid="baseColumns"/>
+        from qyj_user where 1=1 and id=#{id}
+    </select>
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="com.qyj.store.entity.QyjUserEntity" keyProperty="id" useGeneratedKeys="true">
+		insert into qyj_user (user_name, mobile_phone, address, remark, create_time, create_user, update_time, update_user)
+		values (#{userName,jdbcType=VARCHAR}, #{mobilePhone,jdbcType=INTEGER},
+			#{address,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},
+			#{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=BIGINT},
+			#{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=BIGINT})
+	</insert>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.qyj.store.entity.QyjUserEntity">
+		update qyj_user set user_name = #{userName}, mobile_phone = #{mobilePhone}, address = #{address},
+		    remark = #{remark}, update_time = #{updateTime}, update_user = #{updateUser}
+		where id = #{id}
+	</update>
+
+</mapper>
