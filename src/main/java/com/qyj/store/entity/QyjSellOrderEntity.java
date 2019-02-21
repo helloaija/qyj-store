@@ -67,6 +67,15 @@ public class QyjSellOrderEntity implements Serializable {
     /** 更新人 */
     private Long updateUser;
 
+    /** 订单关联的用户ID */
+    private Long userId;
+
+    /** 订单关联的用户的名称 */
+    private String userName;
+
+    /** 订单关联的用户的电话号码 */
+    private String mobilePhone;
+
     /** 订单商品列表 */
     List<QyjSellProductEntity> sellProductList = null;
 
@@ -215,6 +224,29 @@ public class QyjSellOrderEntity implements Serializable {
         this.sellProductList = sellProductList;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getMobilePhone() {
+        return mobilePhone;
+    }
+
+    public void setMobilePhone(String mobilePhone) {
+        this.mobilePhone = mobilePhone;
+    }
 
     @Override
     public String toString() {
@@ -236,6 +268,9 @@ public class QyjSellOrderEntity implements Serializable {
                 ", createUser=" + createUser +
                 ", updateTime=" + updateTime +
                 ", updateUser=" + updateUser +
+                ", userId=" + userId +
+                ", userName='" + userName + '\'' +
+                ", mobilePhone='" + mobilePhone + '\'' +
                 ", sellProductList=" + sellProductList +
                 '}';
     }

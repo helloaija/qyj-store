@@ -16,5 +16,7 @@ ALTER TABLE `qyj_sell_order`
 MODIFY COLUMN `order_status`  varchar(16) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '订单状态[UNPAY：未支付，UNPAYALL:未支付完，HASPAYALL: 完成支付]' AFTER `has_pay_amount`,
 CHANGE COLUMN `finish_time` `order_time`  datetime NULL DEFAULT NULL COMMENT '完成时间' AFTER `pay_time`;
 
+ALTER TABLE `qyj-store`.`qyj_sell_order`
+ADD COLUMN `user_id` int(0) NULL COMMENT '购买用户ID' AFTER `order_status`;
 
 
