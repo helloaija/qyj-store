@@ -48,7 +48,7 @@ public class QyjSellOrderEntity implements Serializable {
 
     /** 完成时间 */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date finishTime;
+    private Date orderTime;
 
     /** 备注 */
     private String remark;
@@ -126,12 +126,12 @@ public class QyjSellOrderEntity implements Serializable {
         this.payTime = payTime;
     }
 
-    public Date getFinishTime() {
-        return finishTime;
+    public Date getOrderTime() {
+        return orderTime;
     }
 
-    public void setFinishTime(Date finishTime) {
-        this.finishTime = finishTime;
+    public void setOrderTime(Date orderTime) {
+        this.orderTime = orderTime;
     }
 
     public Date getUpdateTime() {
@@ -230,7 +230,7 @@ public class QyjSellOrderEntity implements Serializable {
                 ", buyerAddress='" + buyerAddress + '\'' +
                 ", buyerMessage='" + buyerMessage + '\'' +
                 ", payTime=" + payTime +
-                ", finishTime=" + finishTime +
+                ", orderTime=" + orderTime +
                 ", remark='" + remark + '\'' +
                 ", createTime=" + createTime +
                 ", createUser=" + createUser +

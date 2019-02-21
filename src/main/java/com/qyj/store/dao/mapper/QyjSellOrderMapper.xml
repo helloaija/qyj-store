@@ -13,7 +13,7 @@
 		<result column="buyer_address" jdbcType="VARCHAR" property="buyerAddress" />
 		<result column="buyer_message" jdbcType="VARCHAR" property="buyerMessage" />
 		<result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
-		<result column="finish_time" jdbcType="TIMESTAMP" property="finishTime" />
+		<result column="order_time" jdbcType="TIMESTAMP" property="orderTime" />
 		<result column="remark" jdbcType="VARCHAR" property="remark" />
 		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
 		<result column="create_user" jdbcType="TIMESTAMP" property="createUser" />
@@ -23,7 +23,7 @@
 
 	<sql id="baseColumnList">
 		id, order_number, order_amount, modify_amount, has_pay_amount, order_status, buyer_name, buyer_phone,
-		buyer_address, buyer_message, pay_time, finish_time, remark, create_time, create_user, update_time,
+		buyer_address, buyer_message, pay_time, order_time, remark, create_time, create_user, update_time,
 		update_user
 	</sql>
 
@@ -96,8 +96,8 @@
 			<if test="payTime != null">
 				pay_time = #{payTime,jdbcType=TIMESTAMP},
 			</if>
-			<if test="finishTime != null">
-				finish_time = #{finishTime,jdbcType=TIMESTAMP},
+			<if test="orderTime != null">
+				order_time = #{orderTime,jdbcType=TIMESTAMP},
 			</if>
 			<if test="updateTime != null">
 				update_time = #{updateTime,jdbcType=TIMESTAMP},
@@ -129,7 +129,7 @@
 		<result column="buyer_address" jdbcType="VARCHAR" property="buyerAddress" />
 		<result column="buyer_message" jdbcType="VARCHAR" property="buyerMessage" />
 		<result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
-		<result column="finish_time" jdbcType="TIMESTAMP" property="finishTime" />
+		<result column="order_time" jdbcType="TIMESTAMP" property="orderTime" />
 		<result column="remark" jdbcType="VARCHAR" property="remark" />
 		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
 		<result column="create_user" jdbcType="TIMESTAMP" property="createUser" />
@@ -176,10 +176,10 @@
 	<!-- 插入订单 -->
 	<insert id="insertSellOrder" parameterType="com.qyj.store.entity.QyjSellOrderEntity" useGeneratedKeys="true" keyProperty="id">
 		insert into qyj_sell_order (order_number, order_amount, modify_amount, has_pay_amount, order_status,
-				buyer_name, buyer_phone, buyer_address, buyer_message, pay_time, finish_time, remark,
+				buyer_name, buyer_phone, buyer_address, buyer_message, pay_time, order_time, remark,
 				create_time, create_user, update_time, update_user)
 		values (#{orderNumber}, #{orderAmount}, #{modifyAmount}, #{hasPayAmount}, #{orderStatus}, #{buyerName},
-				#{buyerPhone}, #{buyerAddress}, #{buyerMessage}, #{payTime}, #{finishTime}, #{remark},
+				#{buyerPhone}, #{buyerAddress}, #{buyerMessage}, #{payTime}, #{orderTime}, #{remark},
 				#{createTime}, #{createUser}, #{updateTime}, #{updateUser})
 	</insert>
 

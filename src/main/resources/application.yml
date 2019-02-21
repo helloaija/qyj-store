@@ -19,4 +19,4 @@ logging:
       qyj:
         store:
           dao: debug
-  path: F:\workspaces\idea_workspace\logs
+  path: D:\workspace_idea\logs

@@ -40,10 +40,10 @@ public class CommonEnums {
 	}
 
 	/**
-	 * 订单状态[UNPAY：未支付，HASPAY：已支付]
+	 * 订单状态[UNPAY：未支付，UNPAYALL:未支付完，HASPAYALL: 完成支付]
 	 */
 	public enum OrderStatusEnum {
-		UNPAY, HASPAY
+		UNPAY, UNPAYALL, HASPAYALL
 	}
 
 	/**

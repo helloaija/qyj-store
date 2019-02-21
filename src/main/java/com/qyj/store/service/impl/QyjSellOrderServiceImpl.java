@@ -5,6 +5,7 @@ import com.qyj.common.page.PageBean;
 import com.qyj.common.page.PageParam;
 import com.qyj.common.page.ResultBean;
 import com.qyj.common.utils.StringUtils;
+import com.qyj.store.common.enums.CommonEnums;
 import com.qyj.store.common.util.Utils;
 import com.qyj.store.dao.QyjProductMapper;
 import com.qyj.store.dao.QyjSellOrderMapper;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -97,7 +99,7 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
         ResultBean resultBean = new ResultBean();
 
         // 校验
-        if (!this.viladSellOrder(sellOrder, resultBean)) {
+        if (!this.viladStockOrderAndSetValue(sellOrder, resultBean)) {
             return resultBean;
         }
 
@@ -173,7 +175,7 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
     public ResultBean editSellOrder(QyjSellOrderEntity sellOrder) throws Exception {
         ResultBean resultBean = new ResultBean();
         // 校验
-        if (!this.viladSellOrder(sellOrder, resultBean)) {
+        if (!this.viladStockOrderAndSetValue(sellOrder, resultBean)) {
             return resultBean;
         }
 
@@ -301,26 +303,21 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
      * @param resultBean
      * @return
      */
-    private boolean viladSellOrder(QyjSellOrderEntity sellOrder, ResultBean resultBean) {
+    private boolean viladStockOrderAndSetValue(QyjSellOrderEntity sellOrder, ResultBean resultBean) {
         if (sellOrder == null) {
             resultBean.init("0002", "销售单为空");
             return false;
         }
-
         if (sellOrder.getOrderAmount() == null) {
             resultBean.init("0002", "订单金额不能为空");
             return false;
         }
-        if (sellOrder.getModifyAmount() == null) {
-            resultBean.init("0002", "调整金额不能为空");
+        if (sellOrder.getOrderTime() == null) {
+            resultBean.init("0002", "销售时间不能为空");
             return false;
         }
         if (sellOrder.getHasPayAmount() == null) {
             resultBean.init("0002", "已支付金额不能为空");
-            return false;
-        }
-        if (StringUtils.isEmpty(sellOrder.getOrderStatus())) {
-            resultBean.init("0002", "订单状态不能为空");
             return false;
         }
 
@@ -330,8 +327,11 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
             return false;
         }
 
+        // 订单总金额 = 各个产品售价 × 数量 之和
+        BigDecimal orderAmount = BigDecimal.ZERO;
         Set<Long> idSet = new HashSet<Long>();
         for (QyjSellProductEntity SellProductEntity : SellProductEntityList) {
+            orderAmount = orderAmount.add(SellProductEntity.getPrice().multiply(BigDecimal.valueOf(SellProductEntity.getNumber())));
             if (SellProductEntity.getProductId() == null || StringUtils.isEmpty(SellProductEntity.getProductTitle())) {
                 resultBean.init("0002", "产品信息不能为空");
                 return false;
@@ -349,6 +349,27 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
                 return false;
             }
             idSet.add(SellProductEntity.getProductId());
+        }
+
+        sellOrder.setOrderAmount(orderAmount);
+        int comVal = sellOrder.getHasPayAmount().compareTo(orderAmount);
+        if (comVal != -1) {
+            // 支付完
+            sellOrder.setOrderStatus(CommonEnums.OrderStatusEnum.HASPAYALL.toString());
+        } else {
+            if (sellOrder.getHasPayAmount().doubleValue() == 0) {
+                // 一分钱都没支付
+                sellOrder.setOrderStatus(CommonEnums.OrderStatusEnum.UNPAY.toString());
+            } else {
+                // 未支付完
+                sellOrder.setOrderStatus(CommonEnums.OrderStatusEnum.UNPAYALL.toString());
+            }
+        }
+
+        if (sellOrder.getPayTime() == null &&
+                !CommonEnums.OrderStatusEnum.UNPAY.toString().equals(sellOrder.getOrderStatus())) {
+                resultBean.init("0002", "支付时间不能为空");
+                return false;
         }
 
         return true;

@@ -5,6 +5,7 @@ import com.qyj.common.page.PageBean;
 import com.qyj.common.page.PageParam;
 import com.qyj.common.page.ResultBean;
 import com.qyj.common.utils.StringUtils;
+import com.qyj.store.common.enums.CommonEnums;
 import com.qyj.store.common.util.Utils;
 import com.qyj.store.dao.QyjProductMapper;
 import com.qyj.store.dao.QyjStockOrderMapper;
@@ -93,7 +94,7 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
         ResultBean resultBean = new ResultBean();
 
         // 校验
-        if (!this.viladStockOrder(stockOrder, resultBean)) {
+        if (!this.viladStockOrderAndSetValue(stockOrder, resultBean)) {
             return resultBean;
         }
 
@@ -164,7 +165,7 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
     public ResultBean editStockOrder(QyjStockOrderEntity stockOrder) throws Exception {
         ResultBean resultBean = new ResultBean();
         // 校验
-        if (!this.viladStockOrder(stockOrder, resultBean)) {
+        if (!this.viladStockOrderAndSetValue(stockOrder, resultBean)) {
             return resultBean;
         }
 
@@ -276,26 +277,21 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
      * @param resultBean
      * @return
      */
-    private boolean viladStockOrder(QyjStockOrderEntity stockOrder, ResultBean resultBean) {
+    private boolean viladStockOrderAndSetValue(QyjStockOrderEntity stockOrder, ResultBean resultBean) {
         if (stockOrder == null) {
             resultBean.init("0002", "进货单为空");
             return false;
         }
-
         if (stockOrder.getOrderAmount() == null) {
             resultBean.init("0002", "订单金额不能为空");
             return false;
         }
-        if (stockOrder.getModifyAmount() == null) {
-            resultBean.init("0002", "调整金额不能为空");
+        if (stockOrder.getOrderTime() == null) {
+            resultBean.init("0002", "进货时间不能为空");
             return false;
         }
         if (stockOrder.getHasPayAmount() == null) {
             resultBean.init("0002", "已支付金额不能为空");
-            return false;
-        }
-        if (StringUtils.isEmpty(stockOrder.getOrderStatus())) {
-            resultBean.init("0002", "订单状态不能为空");
             return false;
         }
 
@@ -305,8 +301,11 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
             return false;
         }
 
+        // 订单总金额 = 各个产品售价 × 数量 之和
+        BigDecimal orderAmount = BigDecimal.ZERO;
         Set<Long> idSet = new HashSet<Long>();
         for (QyjStockProductEntity stockProductEntity : stockProductEntityList) {
+            orderAmount = orderAmount.add(stockProductEntity.getPrice().multiply(BigDecimal.valueOf(stockProductEntity.getNumber())));
             if (stockProductEntity.getProductId() == null || StringUtils.isEmpty(stockProductEntity.getProductTitle())) {
                 resultBean.init("0002", "产品信息不能为空");
                 return false;
@@ -324,6 +323,27 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
                 return false;
             }
             idSet.add(stockProductEntity.getProductId());
+        }
+
+        stockOrder.setOrderAmount(orderAmount);
+        int comVal = stockOrder.getHasPayAmount().compareTo(orderAmount);
+        if (comVal != -1) {
+            // 支付完
+            stockOrder.setOrderStatus(CommonEnums.OrderStatusEnum.HASPAYALL.toString());
+        } else {
+            if (stockOrder.getHasPayAmount().doubleValue() == 0) {
+                // 一分钱都没支付
+                stockOrder.setOrderStatus(CommonEnums.OrderStatusEnum.UNPAY.toString());
+            } else {
+                // 未支付完
+                stockOrder.setOrderStatus(CommonEnums.OrderStatusEnum.UNPAYALL.toString());
+            }
+        }
+
+        if (stockOrder.getPayTime() == null &&
+                !CommonEnums.OrderStatusEnum.UNPAY.toString().equals(stockOrder.getOrderStatus())) {
+            resultBean.init("0002", "支付时间不能为空");
+            return false;
         }
 
         return true;
