@@ -13,6 +13,7 @@ import com.qyj.store.dao.QyjSellProductMapper;
 import com.qyj.store.entity.QyjProductEntity;
 import com.qyj.store.entity.QyjSellOrderEntity;
 import com.qyj.store.entity.QyjSellProductEntity;
+import com.qyj.store.entity.QyjStockProductEntity;
 import com.qyj.store.service.QyjProductService;
 import com.qyj.store.service.QyjSellOrderService;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -194,43 +196,32 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
         // 获取订单的产品数量，用来更新产品储量
         List<QyjProductEntity> productEntityList = new ArrayList<>();
 
-        Map<Long, QyjSellProductEntity> updateSellProductMap = new HashMap<>();
+        Set<Long> SellProductIdSet = new HashSet<>();
         List<QyjSellProductEntity> sellProductEntityList = sellOrder.getSellProductList();
-
+        // 对页面上编辑的产品分类，没有id的就是新增，有id就是编辑
         for (QyjSellProductEntity sellProductEntity : sellProductEntityList) {
+            SellProductIdSet.add(sellProductEntity.getId());
             if (sellProductEntity.getId() == null) {
-                // 对页面上编辑的产品，没有id的就是新增
                 sellProductEntity.setSellId(sellOrder.getId());
                 sellProductEntity.setCreateTime(new Date());
                 addList.add(sellProductEntity);
-
-                // 新增的，库存减，已售加
-                QyjProductEntity productEntity = productService.getUpdateNumberProductEntity(sellProductEntity.getProductId(),
-                        -1 * sellProductEntity.getNumber(), sellProductEntity.getNumber(), 0);
-                productEntityList.add(productEntity);
             } else {
-                // 对页面上编辑的产品，有id的就是更新
-                updateSellProductMap.put(sellProductEntity.getId(), sellProductEntity);
+                updateList.add(sellProductEntity);
             }
+
+            QyjProductEntity productEntity = productService.getUpdateNumberProductEntity(sellProductEntity.getProductId(),
+                    -1 * sellProductEntity.getNumber(), sellProductEntity.getNumber(), 0);
+            productEntityList.add(productEntity);
         }
 
         for (QyjSellProductEntity sellProductEntity : oldSellProductList) {
-            if (updateSellProductMap.containsKey(sellProductEntity.getId())) {
-                // 旧的产品存在于更新的产品，就是需要更新的
-                updateList.add(updateSellProductMap.get(sellProductEntity.getId()));
-                // 更新的，库存加旧值、减新值，已售减旧值加新值
-                int number = sellProductEntity.getNumber() - updateSellProductMap.get(sellProductEntity.getId()).getNumber();
-                QyjProductEntity productEntity = productService.getUpdateNumberProductEntity(
-                        sellProductEntity.getProductId(), number, -1 * number, 0);
-                productEntityList.add(productEntity);
-            } else {
-                // 旧的产品不存在于更新的产品，就是需要删除的
+            if (!SellProductIdSet.contains(sellProductEntity.getId())) {
                 deleteList.add(sellProductEntity.getId());
-                // 删除的，库存加，已售减
-                QyjProductEntity productEntity = productService.getUpdateNumberProductEntity(
-                        sellProductEntity.getProductId(), sellProductEntity.getNumber(), -1 * sellProductEntity.getNumber(), 0);
-                productEntityList.add(productEntity);
             }
+
+            QyjProductEntity productEntity = productService.getUpdateNumberProductEntity(
+                    sellProductEntity.getProductId(), sellProductEntity.getNumber(), -1 * sellProductEntity.getNumber(), 0);
+            productEntityList.add(productEntity);
         }
 
         if (!addList.isEmpty()) {
@@ -321,34 +312,42 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
             return false;
         }
 
-        List<QyjSellProductEntity> SellProductEntityList = sellOrder.getSellProductList();
-        if (SellProductEntityList == null || SellProductEntityList.isEmpty()) {
-            resultBean.init("0002", "销售单产品不能为空");
-            return false;
-        }
+        List<QyjSellProductEntity> sellProductEntityList = sellOrder.getSellProductList();
 
         // 订单总金额 = 各个产品售价 × 数量 之和
         BigDecimal orderAmount = BigDecimal.ZERO;
         Set<Long> idSet = new HashSet<Long>();
-        for (QyjSellProductEntity SellProductEntity : SellProductEntityList) {
-            orderAmount = orderAmount.add(SellProductEntity.getPrice().multiply(BigDecimal.valueOf(SellProductEntity.getNumber())));
-            if (SellProductEntity.getProductId() == null || StringUtils.isEmpty(SellProductEntity.getProductTitle())) {
+
+        Iterator<QyjSellProductEntity> it = sellProductEntityList.iterator();
+        while(it.hasNext()) {
+            QyjSellProductEntity sellProductEntity = it.next();
+            if (sellProductEntity.getProductId() == null) {
+                it.remove();
+                continue;
+            }
+            orderAmount = orderAmount.add(sellProductEntity.getPrice().multiply(BigDecimal.valueOf(sellProductEntity.getNumber())));
+            if (sellProductEntity.getProductId() == null || StringUtils.isEmpty(sellProductEntity.getProductTitle())) {
                 resultBean.init("0002", "产品信息不能为空");
                 return false;
             }
-            if (SellProductEntity.getNumber() == null || SellProductEntity.getNumber().intValue() <= 0) {
+            if (sellProductEntity.getNumber() == null || sellProductEntity.getNumber().intValue() <= 0) {
                 resultBean.init("0002", "产品数量不正确");
                 return false;
             }
-            if (SellProductEntity.getPrice() == null || SellProductEntity.getPrice().doubleValue() <= 0) {
+            if (sellProductEntity.getPrice() == null || sellProductEntity.getPrice().doubleValue() <= 0) {
                 resultBean.init("0002", "产品金额不正确");
                 return false;
             }
-            if (idSet.contains(SellProductEntity.getProductId())) {
-                resultBean.init("0002", "产品信息存在重复[" + SellProductEntity.getProductTitle() + "]");
+            if (idSet.contains(sellProductEntity.getProductId())) {
+                resultBean.init("0002", "产品信息存在重复[" + sellProductEntity.getProductTitle() + "]");
                 return false;
             }
-            idSet.add(SellProductEntity.getProductId());
+            idSet.add(sellProductEntity.getProductId());
+        }
+
+        if (sellProductEntityList == null || sellProductEntityList.isEmpty()) {
+            resultBean.init("0002", "销售单产品不能为空");
+            return false;
         }
 
         sellOrder.setOrderAmount(orderAmount);

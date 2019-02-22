@@ -30,18 +30,6 @@ public class QyjSellOrderEntity implements Serializable {
     /** 订单状态[UNPAY：待支付，UNSEND：代发货，UNTAKE：待收货，END：已结束] */
     private String orderStatus;
 
-    /** 供应商名称 */
-    private String buyerName;
-
-    /** 供应商电话 */
-    private String buyerPhone;
-
-    /** 供应商地址 */
-    private String buyerAddress;
-
-    /** 供应商信息 */
-    private String buyerMessage;
-
     /** 支付时间 */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date payTime;
@@ -184,38 +172,6 @@ public class QyjSellOrderEntity implements Serializable {
         this.updateUser = updateUser;
     }
 
-    public String getBuyerName() {
-        return buyerName;
-    }
-
-    public void setBuyerName(String buyerName) {
-        this.buyerName = buyerName;
-    }
-
-    public String getBuyerPhone() {
-        return buyerPhone;
-    }
-
-    public void setBuyerPhone(String buyerPhone) {
-        this.buyerPhone = buyerPhone;
-    }
-
-    public String getBuyerAddress() {
-        return buyerAddress;
-    }
-
-    public void setBuyerAddress(String buyerAddress) {
-        this.buyerAddress = buyerAddress;
-    }
-
-    public String getBuyerMessage() {
-        return buyerMessage;
-    }
-
-    public void setBuyerMessage(String buyerMessage) {
-        this.buyerMessage = buyerMessage;
-    }
-
     public List<QyjSellProductEntity> getSellProductList() {
         return sellProductList;
     }
@@ -257,10 +213,6 @@ public class QyjSellOrderEntity implements Serializable {
                 ", modifyAmount=" + modifyAmount +
                 ", hasPayAmount=" + hasPayAmount +
                 ", orderStatus='" + orderStatus + '\'' +
-                ", buyerName='" + buyerName + '\'' +
-                ", buyerPhone='" + buyerPhone + '\'' +
-                ", buyerAddress='" + buyerAddress + '\'' +
-                ", buyerMessage='" + buyerMessage + '\'' +
                 ", payTime=" + payTime +
                 ", orderTime=" + orderTime +
                 ", remark='" + remark + '\'' +

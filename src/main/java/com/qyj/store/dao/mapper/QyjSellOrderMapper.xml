@@ -9,10 +9,6 @@
         <result column="has_pay_amount" jdbcType="DECIMAL" property="hasPayAmount"/>
         <result column="order_status" jdbcType="VARCHAR" property="orderStatus"/>
         <result column="user_id" property="userId"/>
-        <result column="buyer_name" jdbcType="VARCHAR" property="buyerName"/>
-        <result column="buyer_phone" jdbcType="VARCHAR" property="buyerPhone"/>
-        <result column="buyer_address" jdbcType="VARCHAR" property="buyerAddress"/>
-        <result column="buyer_message" jdbcType="VARCHAR" property="buyerMessage"/>
         <result column="pay_time" jdbcType="TIMESTAMP" property="payTime"/>
         <result column="order_time" jdbcType="TIMESTAMP" property="orderTime"/>
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
@@ -23,17 +19,9 @@
     </resultMap>
 
     <sql id="baseColumnList">
-		id, order_number, order_amount, modify_amount, has_pay_amount, order_status, buyer_name, buyer_phone,
-		buyer_address, buyer_message, pay_time, order_time, remark, create_time, create_user, update_time,
-		update_user
+		id, order_number, order_amount, modify_amount, has_pay_amount, order_status, user_id, pay_time, order_time,
+		remark, create_time, create_user, update_time, update_user
 	</sql>
-
-    <!-- 根据id获取订单 -->
-    <select id="getSellOrderById" parameterType="java.lang.Long" resultMap="baseResultMap">
-        select
-        <include refid="baseColumnList"/>
-        from qyj_sell_order where id = #{id}
-    </select>
 
     <!-- 查询条件 -->
     <sql id="condition">
@@ -57,14 +45,6 @@
         </if>
     </sql>
 
-    <!-- 根据查询条件获取订单 -->
-    <select id="listSellOrderByModel" parameterType="com.qyj.store.entity.QyjSellOrderEntity" resultMap="baseResultMap">
-        select
-        <include refid="baseColumnList"/>
-        from qyj_sell_order where 1 = 1
-        <include refid="condition"/>
-    </select>
-
     <!-- 更新订单 -->
     <update id="updateSellOrder" parameterType="com.qyj.store.entity.QyjSellOrderEntity">
         update qyj_sell_order
@@ -84,18 +64,6 @@
                 </if>
                 <if test="orderStatus != null">
                     order_status = #{orderStatus,jdbcType=VARCHAR},
-                </if>
-                <if test="buyerName != null">
-                    buyer_name = #{buyerName,jdbcType=VARCHAR},
-                </if>
-                <if test="buyerPhone != null">
-                    buyer_phone = #{buyerPhone,jdbcType=VARCHAR},
-                </if>
-                <if test="buyerAddress != null">
-                    buyer_address = #{buyerAddress,jdbcType=VARCHAR},
-                </if>
-                <if test="buyerMessage != null">
-                    buyer_message = #{buyerMessage,jdbcType=VARCHAR},
                 </if>
                 <if test="createTime != null">
                     create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -135,10 +103,6 @@
         <result column="user_id" property="userId"/>
         <result column="user_name" property="userName"/>
         <result column="mobile_phone" property="mobilePhone"/>
-        <result column="buyer_name" jdbcType="VARCHAR" property="buyerName"/>
-        <result column="buyer_phone" jdbcType="VARCHAR" property="buyerPhone"/>
-        <result column="buyer_address" jdbcType="VARCHAR" property="buyerAddress"/>
-        <result column="buyer_message" jdbcType="VARCHAR" property="buyerMessage"/>
         <result column="pay_time" jdbcType="TIMESTAMP" property="payTime"/>
         <result column="order_time" jdbcType="TIMESTAMP" property="orderTime"/>
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
@@ -184,6 +148,12 @@
         <if test="createTimeEnd != null and createTimeEnd != ''">
             <![CDATA[and o.create_time < DATE_FORMAT(date_add(#{createTimeEnd,jdbcType=TIMESTAMP}, interval 1 day), '%Y-%c-%d')]]>
         </if>
+        <if test="orderTimeBegin != null and orderTimeBegin != ''">
+            <![CDATA[and o.order_time >= #{orderTimeBegin}]]>
+        </if>
+        <if test="orderTimeEnd != null and orderTimeEnd != ''">
+            <![CDATA[and o.order_time < DATE_FORMAT(date_add(#{orderTimeEnd,jdbcType=TIMESTAMP}, interval 1 day), '%Y-%c-%d')]]>
+        </if>
     </sql>
 
     <!-- 统计订单 -->
@@ -215,11 +185,9 @@
     <insert id="insertSellOrder" parameterType="com.qyj.store.entity.QyjSellOrderEntity" useGeneratedKeys="true"
             keyProperty="id">
 		insert into qyj_sell_order (order_number, order_amount, modify_amount, has_pay_amount, order_status,
-				user_id, buyer_name, buyer_phone, buyer_address, buyer_message, pay_time, order_time, remark,
-				create_time, create_user, update_time, update_user)
-		values (#{orderNumber}, #{orderAmount}, #{modifyAmount}, #{hasPayAmount}, #{orderStatus}, #{user_id},
-		        #{buyerName}, #{buyerPhone}, #{buyerAddress}, #{buyerMessage}, #{payTime}, #{orderTime}, #{remark},
-				#{createTime}, #{createUser}, #{updateTime}, #{updateUser})
+				user_id, pay_time, order_time, remark, create_time, create_user, update_time, update_user)
+		values (#{orderNumber}, #{orderAmount}, #{modifyAmount}, #{hasPayAmount}, #{orderStatus}, #{userId},
+		        #{payTime}, #{orderTime}, #{remark}, #{createTime}, #{createUser}, #{updateTime}, #{updateUser})
 	</insert>
 
     <!-- 获取SellId获取关联产品的进货单 -->

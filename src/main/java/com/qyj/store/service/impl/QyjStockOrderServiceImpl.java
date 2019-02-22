@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -296,15 +297,18 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
         }
 
         List<QyjStockProductEntity> stockProductEntityList = stockOrder.getStockProductList();
-        if (stockProductEntityList == null || stockProductEntityList.isEmpty()) {
-            resultBean.init("0002", "进货单产品不能为空");
-            return false;
-        }
 
         // 订单总金额 = 各个产品售价 × 数量 之和
         BigDecimal orderAmount = BigDecimal.ZERO;
         Set<Long> idSet = new HashSet<Long>();
-        for (QyjStockProductEntity stockProductEntity : stockProductEntityList) {
+
+        Iterator<QyjStockProductEntity> it = stockProductEntityList.iterator();
+        while(it.hasNext()) {
+            QyjStockProductEntity stockProductEntity = it.next();
+            if (stockProductEntity.getProductId() == null) {
+                it.remove();
+                continue;
+            }
             orderAmount = orderAmount.add(stockProductEntity.getPrice().multiply(BigDecimal.valueOf(stockProductEntity.getNumber())));
             if (stockProductEntity.getProductId() == null || StringUtils.isEmpty(stockProductEntity.getProductTitle())) {
                 resultBean.init("0002", "产品信息不能为空");
@@ -323,6 +327,11 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
                 return false;
             }
             idSet.add(stockProductEntity.getProductId());
+        }
+
+        if (stockProductEntityList == null || stockProductEntityList.isEmpty()) {
+            resultBean.init("0002", "进货单产品不能为空");
+            return false;
         }
 
         stockOrder.setOrderAmount(orderAmount);

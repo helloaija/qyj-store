@@ -55,11 +55,23 @@ public class QyjSellOrderController extends BaseController {
         String createTimeBegin = request.getParameter("createTimeBegin");
         // 创建结束时间
         String createTimeEnd = request.getParameter("createTimeEnd");
+        // 买家名称
+        String userName = request.getParameter("userName");
+        // 买家电话
+        String mobilePhone = request.getParameter("mobilePhone");
+        // 订单开始时间
+        String orderTimeBegin = request.getParameter("orderTimeBegin");
+        // 订单结束时间
+        String orderTimeEnd = request.getParameter("orderTimeEnd");
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("orderStatus", status);
         paramMap.put("likeOrderNumber", orderNumber);
         paramMap.put("createTimeBegin", createTimeBegin);
         paramMap.put("createTimeEnd", createTimeEnd);
+        paramMap.put("likeUserName", userName);
+        paramMap.put("likeMobilePhone", mobilePhone);
+        paramMap.put("orderTimeBegin", orderTimeBegin);
+        paramMap.put("orderTimeEnd", orderTimeEnd);
         pageParam.setOrderByCondition("create_time desc");
         PageBean pageBean = sellOrderService.listSellOrderAndProductPage(pageParam, paramMap);
         return new ResultBean("0000", "请求成功", pageBean);
