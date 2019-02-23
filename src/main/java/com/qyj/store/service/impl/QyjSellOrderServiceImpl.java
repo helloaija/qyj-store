@@ -14,6 +14,7 @@ import com.qyj.store.entity.QyjProductEntity;
 import com.qyj.store.entity.QyjSellOrderEntity;
 import com.qyj.store.entity.QyjSellProductEntity;
 import com.qyj.store.entity.QyjStockProductEntity;
+import com.qyj.store.model.QyjUserOrderSumModel;
 import com.qyj.store.service.QyjProductService;
 import com.qyj.store.service.QyjSellOrderService;
 import org.slf4j.Logger;
@@ -69,6 +70,8 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
         if (paramMap == null) {
             paramMap = new HashMap<String, Object>();
         }
+
+        paramMap.put("pageParam", pageParam);
         // 订单数量
         int totalCount = sellOrderMapper.countSellOrder(paramMap);
         logger.info("listOrderPage paramMap:{}, totalCount:{}", paramMap, totalCount);
@@ -80,8 +83,6 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
         pageParam.setTotalCount(totalCount);
         // 计算分页信息
         pageParam.splitPageInstance();
-
-        paramMap.put("pageParam", pageParam);
 
         // 获取分页数据列表
         List<QyjSellOrderEntity> projectList = sellOrderMapper.listSellOrderAndProduct(paramMap);
@@ -407,6 +408,42 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
         if (sb.length() > 0) {
             throw new ValidException(sb.toString());
         }
+    }
+
+    /**
+     * 获取用户订单统计
+     * @param pageParam 分页信息
+     * @param paramMap 查询参数
+     * @return
+     * @throws Exception
+     */
+    public ResultBean listUserOrderSumPage(PageParam pageParam, Map<String, Object> paramMap) {
+        ResultBean resultBean = new ResultBean();
+        if (pageParam == null) {
+            pageParam = new PageParam();
+        }
+        if (paramMap == null) {
+            paramMap = new HashMap<String, Object>();
+        }
+        paramMap.put("pageParam", pageParam);
+        // 订单数量
+        int totalCount = sellOrderMapper.countUserOrderSum(paramMap);
+        logger.info("listUserOrderSumPage paramMap:{}, totalCount:{}", paramMap, totalCount);
+
+        if (totalCount <= 0) {
+            return resultBean.init("0000", "success",
+                    new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), 0, null));
+        }
+
+        pageParam.setTotalCount(totalCount);
+        // 计算分页信息
+        pageParam.splitPageInstance();
+
+        // 获取分页数据列表
+        List<QyjUserOrderSumModel> projectList = sellOrderMapper.listUserOrderSum(paramMap);
+
+        return resultBean.init("0000", "success",
+                new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), totalCount, projectList));
     }
 
     @Autowired

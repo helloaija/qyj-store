@@ -154,4 +154,30 @@ public class QyjSellOrderController extends BaseController {
 
         return sellOrderService.deleteSellOrder(sellId);
     }
+
+    /**
+     * 获取用户订单金额统计数据
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/listUserOrderSumPage", method = RequestMethod.GET)
+    public ResultBean listUserOrderSumPage(HttpServletRequest request) {
+        PageParam pageParam = this.initPageParam(request);
+        // 买家名称
+        String userName = request.getParameter("userName");
+        // 买家电话
+        String mobilePhone = request.getParameter("mobilePhone");
+        // 订单开始时间
+        String orderTimeBegin = request.getParameter("orderTimeBegin");
+        // 订单结束时间
+        String orderTimeEnd = request.getParameter("orderTimeEnd");
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("likeUserName", userName);
+        paramMap.put("likeMobilePhone", mobilePhone);
+        paramMap.put("orderTimeBegin", orderTimeBegin);
+        paramMap.put("orderTimeEnd", orderTimeEnd);
+        pageParam.setOrderByCondition("create_time desc");
+        return sellOrderService.listUserOrderSumPage(pageParam, paramMap);
+    }
 }

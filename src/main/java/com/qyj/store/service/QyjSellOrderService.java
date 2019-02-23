@@ -52,5 +52,13 @@ public interface QyjSellOrderService {
 	 * @throws Exception
 	 */
 	ResultBean deleteSellOrder(Long sellId) throws Exception;
-	
+
+	/**
+	 * 获取用户订单统计
+	 * @param pageParam 分页信息
+	 * @param paramMap 查询参数
+	 * @return
+	 * @throws Exception
+	 */
+	ResultBean listUserOrderSumPage(PageParam pageParam, Map<String, Object> paramMap);
 }
