@@ -24,6 +24,7 @@ public class SysUserModel extends BaseModel {
 	private Date lastTime;
 	private String lastIp;
 	private String ipAddr;
+	private String openId;
 
 	/**
 	 * @return the userName
@@ -193,5 +194,13 @@ public class SysUserModel extends BaseModel {
 
 	public void setIpAddr(String ipAddr) {
 		this.ipAddr = ipAddr;
+	}
+
+	public String getOpenId() {
+		return openId;
+	}
+
+	public void setOpenId(String openId) {
+		this.openId = openId;
 	}
 }

@@ -2,6 +2,7 @@ package com.qyj.store.controller.bussiness;
 
 import com.qyj.common.utils.StringUtils;
 import com.qyj.store.common.util.wechat.WechatUtils;
+import com.qyj.store.service.QyjWeChatService;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -9,21 +10,24 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
 
 @Controller
 @RequestMapping("/wechat")
-public class WeChatController {
-    private static Logger logger = LoggerFactory.getLogger(WeChatController.class);
+public class QyjWeChatController {
+    private static Logger logger = LoggerFactory.getLogger(QyjWeChatController.class);
+
+    @Autowired
+    private QyjWeChatService qyjWeChatService;
 
     /**
      * 验证微信服务器消息
@@ -72,33 +76,7 @@ public class WeChatController {
         if (WechatUtils.MSG_TYPE_TEXT.equalsIgnoreCase(msgType)) {
             String content = map.get("Content");
             if ("yzm".equalsIgnoreCase(content)) {
-                Document document = DocumentHelper.createDocument();
-                // 添加根节点
-                Element root = document.addElement("xml");
-                Element child = root.addElement("ToUserName");
-                child.addText("<![CDATA[" + map.get("FromUserName") + "]]>");
-
-                child = root.addElement("FromUserName");
-                child.addText("<![CDATA[" + map.get("ToUserName") + "]]>");
-
-                child = root.addElement("CreateTime");
-                child.addText("<![CDATA[" + System.currentTimeMillis() + "]]>");
-
-                child = root.addElement("MsgType");
-                child.addText("<![CDATA[" + WechatUtils.MSG_TYPE_TEXT + "]]>");
-
-                child = root.addElement("Content");
-                child.addText("<![CDATA[" + "哈哈" + "]]>");
-
-                respText = root.asXML();
-
-                StringWriter sw = new StringWriter();
-                OutputFormat format = OutputFormat.createPrettyPrint();
-                format.setEncoding("utf-8");
-                XMLWriter xmlWriter = new XMLWriter(sw, format);
-                xmlWriter.setEscapeText(false);
-                xmlWriter.write(root);
-                respText = sw.toString();
+                respText = qyjWeChatService.getValidCode(map);
             }
         } else {
 

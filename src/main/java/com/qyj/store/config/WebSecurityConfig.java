@@ -7,6 +7,7 @@ import com.qyj.store.common.constant.CommonConstant;
 import com.qyj.store.common.util.JwtTokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,10 +15,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +36,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private QyjAccessDecisionManager qyjAccessDecisionManager;
+
+    @Autowired
+    private AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> authenticationDetailsSource;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -70,7 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         }).failureHandler((request, response, authentication) -> {
             // 登录失败
             response.getWriter().write(JSON.toJSONString(new ResultBean("0001", authentication.getMessage())));
-        }).permitAll();
+        }).authenticationDetailsSource(authenticationDetailsSource).permitAll();
 
         http.exceptionHandling().accessDeniedHandler((request, response, authentication) -> {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);

@@ -3,7 +3,6 @@ package com.qyj.store.config;
 import com.qyj.store.common.constant.CommonConstant;
 import com.qyj.store.common.util.JwtTokenUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;

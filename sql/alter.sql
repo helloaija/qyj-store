@@ -25,4 +25,7 @@ drop COLUMN buyer_phone,
 drop COLUMN buyer_address,
 drop COLUMN buyer_message;
 
+alter table sys_user add open_id varchar(64) null default null comment '微信关联公众号的openId' after tel_phone ;
+
+
 

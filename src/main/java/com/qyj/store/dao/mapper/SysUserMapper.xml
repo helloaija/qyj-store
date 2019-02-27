@@ -13,6 +13,7 @@
         <result column="real_name" property="realName"/>
         <result column="card" property="card"/>
         <result column="tel_phone" property="telPhone"/>
+        <result column="open_id" property="openId"/>
         <result column="email" property="email"/>
         <result column="qq" property="qq"/>
         <result column="sex" property="sex"/>
@@ -158,7 +159,7 @@
 
     <!--根据用户名获取用户信息-->
     <select id="getSysUserByUsername" parameterType="java.lang.System" resultMap="tableMapToModel">
-        select id, user_name, password, enable from sys_user where user_name = #{userName}
+        select id, user_name, password, enable, open_id from sys_user where user_name = #{userName}
     </select>
 
     <insert id="insertUser" parameterType="com.qyj.store.entity.SysUserModel">

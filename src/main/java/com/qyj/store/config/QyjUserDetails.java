@@ -18,6 +18,7 @@ public class QyjUserDetails implements UserDetails, Serializable {
 	private Long userId;
 	private String username;
 	private String password;
+	private String openId;
 	private Set<? extends GrantedAuthority> authorities;
 	private List<SysMenuModel> menuList;
 
@@ -95,8 +96,17 @@ public class QyjUserDetails implements UserDetails, Serializable {
 		this.menuList = menuList;
 	}
 
+	public String getOpenId() {
+		return openId;
+	}
+
+	public void setOpenId(String openId) {
+		this.openId = openId;
+	}
+
 	public boolean isSuperadmin() {
 		// id为1是超级管理员，拥有全部菜单和权限
 		return 1 == this.getUserId();
 	}
+
 }
