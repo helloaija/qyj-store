@@ -16,6 +16,7 @@ import com.qyj.store.entity.SysUserModel;
 import com.qyj.store.service.SysUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -37,7 +38,9 @@ import java.util.*;
 @RequestMapping("/admin/user")
 public class UserController extends BaseController {
 
-    /** 系统用户service */
+    /**
+     * 系统用户service
+     */
     private SysUserService sysUserService;
 
     protected static final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -78,13 +81,13 @@ public class UserController extends BaseController {
     /**
      * 新增用户信息
      * @param userModel 用户信息
-     * @param request request
-     * @param roleIds 角色id数组
+     * @param request   request
+     * @param roleIds   角色id数组
      * @return
      */
-	@ResponseBody
-	@RequestMapping(value = "/addUser", method = RequestMethod.POST)
-	public ResultBean addUser(SysUserModel userModel, HttpServletRequest request,
+    @ResponseBody
+    @RequestMapping(value = "/addUser", method = RequestMethod.POST)
+    public ResultBean addUser(SysUserModel userModel, HttpServletRequest request,
                               @RequestParam(value = "roleIds", required = false) Long... roleIds) {
         QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -93,20 +96,20 @@ public class UserController extends BaseController {
         userModel.setCreateTime(new Date());
         userModel.setUpdateTime(new Date());
 
-		return sysUserService.addUser(userModel, roleIds);
-	}
+        return sysUserService.addUser(userModel, roleIds);
+    }
 
     /**
      * 更新用户信息
      * @param userModel 用户信息
-     * @param request request
-     * @param roleIds 角色id数组
+     * @param request   request
+     * @param roleIds   角色id数组
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "/updateUser", method = RequestMethod.POST)
     public ResultBean updateUser(SysUserModel userModel, HttpServletRequest request,
-                              @RequestParam(value = "roleIds", required = false) Long... roleIds) {
+                                 @RequestParam(value = "roleIds", required = false) Long... roleIds) {
         QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userModel.setUpdateUser(userDetails.getUserId());
         userModel.setUpdateTime(new Date());
@@ -121,16 +124,16 @@ public class UserController extends BaseController {
         return sysUserService.updateUser(userModel, roleIds);
     }
 
-	/**
-	 * 删除用户信息
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/delUser", method = RequestMethod.POST)
-	public ResultBean delUser(@RequestParam("ids") Long... ids) throws Exception {
+    /**
+     * 删除用户信息
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/delUser", method = RequestMethod.POST)
+    public ResultBean delUser(@RequestParam("ids") Long... ids) throws Exception {
         sysUserService.delUser(ids);
-		return new ResultBean("0000", "删除用户成功！");
-	}
+        return new ResultBean("0000", "删除用户成功！");
+    }
 
     /**
      * 更新用户状态
@@ -175,17 +178,18 @@ public class UserController extends BaseController {
     public ResultBean getUserInfo(HttpServletRequest request, HttpServletResponse response) throws Exception {
         QyjUserDetails userDetails = (QyjUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<SysMenuModel> sysMenuList = userDetails.getMenuList();
+        List<SysMenuModel> userMenuList = new ArrayList<>();
 
-        Iterator<SysMenuModel> it = sysMenuList.iterator();
-        while (it.hasNext()) {
-            SysMenuModel menu = it.next();
-            if (!"MENU".equals(menu.getMenuType())) {
-                it.remove();
+        for (SysMenuModel model : sysMenuList) {
+            if ("MENU".equals(model.getMenuType())) {
+                SysMenuModel menu = new SysMenuModel();
+                BeanUtils.copyProperties(model, menu);
+                userMenuList.add(menu);
             }
         }
 
         TreeNode rootNode = new TreeNode(new Long(0), "根目录");
-        TreeUtil.loadTreeNode(rootNode, sysMenuList);
+        TreeUtil.loadTreeNode(rootNode, userMenuList);
 
         List<TreeNode> tree = new ArrayList<>();
         tree.add(rootNode);
