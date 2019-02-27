@@ -1,6 +1,14 @@
 package com.qyj.common.utils;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -49,7 +57,25 @@ public class CommonUtils {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println();
+
+		Document document = DocumentHelper.createDocument();
+		// 添加根节点
+		Element root = document.addElement("xml");
+		Element child = root.addElement("ToUserName");
+		child.addText("<![CDATA[" + 123 + "]]>");
+		// System.out.println();
+
+		StringWriter sw = new StringWriter();
+		OutputFormat format = OutputFormat.createPrettyPrint();
+		format.setEncoding("utf-8");
+		XMLWriter xmlWriter = new XMLWriter(sw, format);
+		xmlWriter.setEscapeText(false);
+		try {
+			xmlWriter.write(root);
+			System.out.println(sw);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**

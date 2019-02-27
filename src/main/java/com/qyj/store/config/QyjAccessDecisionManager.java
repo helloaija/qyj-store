@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -22,6 +23,10 @@ import java.util.List;
 public class QyjAccessDecisionManager implements AccessDecisionManager {
     @Override
     public void decide(Authentication authentication, Object o, Collection<ConfigAttribute> collection) throws AccessDeniedException, InsufficientAuthenticationException {
+        String url = ((FilterInvocation) o).getRequest().getRequestURI().replaceAll("/", "");
+        if (!url.startsWith("admin")) {
+            return;
+        }
         if (!(authentication.getPrincipal() instanceof QyjUserDetails)) {
            throw new AccessDeniedException("权限不足");
         }
@@ -31,7 +36,7 @@ public class QyjAccessDecisionManager implements AccessDecisionManager {
             return;
         }
 
-        String url = ((FilterInvocation) o).getRequest().getRequestURI().replaceAll("/", "");
+
         String[] allowUrls = new String[]{"admin/user/getUserInfo", "admin/user/logout"};
         for (String allowUrl : allowUrls) {
             if (url.equals(allowUrl.replaceAll("/", ""))) {
