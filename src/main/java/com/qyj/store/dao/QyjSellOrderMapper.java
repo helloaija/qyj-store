@@ -28,11 +28,11 @@ public interface QyjSellOrderMapper {
 	int insertSellOrder(QyjSellOrderEntity sellOrder);
 
     /**
-	 * 根据条件统计订单数量
+	 * 根据条件统计订单信息（数量，订单金额总和，已支付金额总和）
 	 * @param paramMap
 	 * @return
 	 */
-	Integer countSellOrder(Map<String, Object> paramMap);
+	Map<String, Object> countSellOrder(Map<String, Object> paramMap);
 
 	/**
      * 获取sellId获取关联产品的销售单

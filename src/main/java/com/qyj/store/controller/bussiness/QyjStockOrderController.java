@@ -67,8 +67,7 @@ public class QyjStockOrderController extends BaseController {
         paramMap.put("createTimeBegin", createTimeBegin);
         paramMap.put("createTimeEnd", createTimeEnd);
         pageParam.setOrderByCondition("create_time desc");
-        PageBean pageBean = stockOrderService.listStockOrderAndProductPage(pageParam, paramMap);
-        return new ResultBean("0000", "请求成功", pageBean);
+        return stockOrderService.listStockOrderAndProductPage(pageParam, paramMap);
     }
 
     /**

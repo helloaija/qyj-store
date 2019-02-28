@@ -73,8 +73,7 @@ public class QyjSellOrderController extends BaseController {
         paramMap.put("orderTimeBegin", orderTimeBegin);
         paramMap.put("orderTimeEnd", orderTimeEnd);
         pageParam.setOrderByCondition("create_time desc");
-        PageBean pageBean = sellOrderService.listSellOrderAndProductPage(pageParam, paramMap);
-        return new ResultBean("0000", "请求成功", pageBean);
+        return sellOrderService.listSellOrderAndProductPage(pageParam, paramMap);
     }
 
     /**

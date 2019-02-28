@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.transform.Result;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,7 +64,9 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
      * @throws Exception
      */
     @Override
-    public PageBean listSellOrderAndProductPage(PageParam pageParam, Map<String, Object> paramMap) throws Exception {
+    public ResultBean listSellOrderAndProductPage(PageParam pageParam, Map<String, Object> paramMap) {
+        ResultBean resultBean = new ResultBean();
+
         if (pageParam == null) {
             pageParam = new PageParam();
         }
@@ -72,22 +75,25 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
         }
 
         paramMap.put("pageParam", pageParam);
-        // 订单数量
-        int totalCount = sellOrderMapper.countSellOrder(paramMap);
-        logger.info("listOrderPage paramMap:{}, totalCount:{}", paramMap, totalCount);
+        // 订单统计信息
+        Map<String, Object> countMap = sellOrderMapper.countSellOrder(paramMap);
+        logger.info("listOrderPage paramMap:{}, countMap:{}", paramMap, countMap);
 
-        if (totalCount <= 0) {
-            return new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), 0, null);
-        }
-
+        int totalCount = Integer.parseInt(String.valueOf(countMap.get("totalCount")));
         pageParam.setTotalCount(totalCount);
         // 计算分页信息
         pageParam.splitPageInstance();
 
+        if (totalCount <= 0) {
+            countMap.put("pageBean", new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), totalCount, new ArrayList<>()));
+            return resultBean.init("0000", "请求成功", countMap);
+        }
+
         // 获取分页数据列表
         List<QyjSellOrderEntity> projectList = sellOrderMapper.listSellOrderAndProduct(paramMap);
 
-        return new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), totalCount, projectList);
+        countMap.put("pageBean", new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), totalCount, projectList));
+        return resultBean.init("0000", "请求成功", countMap);
     }
 
     /**

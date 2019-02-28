@@ -28,11 +28,11 @@ public interface QyjStockOrderMapper {
 	int insertStockOrder(QyjStockOrderEntity stockOrder);
 
     /**
-	 * 根据条件统计订单数量
+	 * 根据条件统计订单信息（数量、订单总额、支付总额）
 	 * @param paramMap
 	 * @return
 	 */
-	Integer countStockOrder(Map<String, Object> paramMap);
+	Map<String, Object> countStockOrder(Map<String, Object> paramMap);
 
 	/**
 	 * 获取stockId获取关联产品的进货单

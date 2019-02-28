@@ -157,8 +157,9 @@
     </sql>
 
     <!-- 统计订单 -->
-    <select id="countSellOrder" parameterType="java.util.Map" resultType="java.lang.Integer">
-        select count(o.id) from qyj_sell_order o left join qyj_user u on o.user_id = u.id
+    <select id="countSellOrder" parameterType="java.util.Map" resultType="java.util.Map">
+        select count(o.id) totalCount, sum(o.order_amount) totalOrderAmount, sum(o.has_pay_amount) totalHasPayAmount
+        from qyj_sell_order o left join qyj_user u on o.user_id = u.id
         <where>
             <include refid="condition_user"/>
         </where>
@@ -223,6 +224,17 @@
         group by u.id
         <if test="pageParam != null">
             ${pageParam.limit}
+        </if>
+    </select>
+
+    <!-- 获取订单统计数据 -->
+    <select id="getOrderCountData" parameterType="java.util.Map" resultType="java.util.Map">
+        select count(o.id) from qyj_sell_order o left join qyj_user u on o.user_id = u.id
+        <where>
+            <include refid="condition_user"/>
+        </where>
+        <if test="pageParam != null">
+            ${pageParam.queryCondition}
         </if>
     </select>
 </mapper>

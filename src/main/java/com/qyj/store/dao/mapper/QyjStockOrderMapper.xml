@@ -149,8 +149,9 @@
     </resultMap>
 
     <!-- 统计订单 -->
-    <select id="countStockOrder" parameterType="java.util.Map" resultType="java.lang.Integer">
-        select count(id) from qyj_stock_order
+    <select id="countStockOrder" parameterType="java.util.Map" resultType="java.util.Map">
+        select count(id) totalCount, sum(order_amount) totalOrderAmount, sum(has_pay_amount) totalHasPayAmount
+        from qyj_stock_order
         <where>
             <include refid="condition"/>
         </where>

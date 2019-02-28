@@ -20,7 +20,7 @@ public interface QyjSellOrderService {
 	 * @return
 	 * @throws Exception
 	 */
-	PageBean listSellOrderAndProductPage(PageParam pageParam, Map<String, Object> paramMap) throws Exception;
+	ResultBean listSellOrderAndProductPage(PageParam pageParam, Map<String, Object> paramMap);
 
 	/**
 	 * 添加销售订单

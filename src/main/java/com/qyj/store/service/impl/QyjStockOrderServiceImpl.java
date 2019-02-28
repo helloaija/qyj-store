@@ -56,19 +56,27 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
      * @throws Exception
      */
     @Override
-    public PageBean listStockOrderAndProductPage(PageParam pageParam, Map<String, Object> paramMap) throws Exception {
+    public ResultBean listStockOrderAndProductPage(PageParam pageParam, Map<String, Object> paramMap) {
+        ResultBean resultBean = new ResultBean();
+
         if (pageParam == null) {
             pageParam = new PageParam();
         }
         if (paramMap == null) {
             paramMap = new HashMap<String, Object>();
         }
-        // 订单数量
-        int totalCount = stockOrderMapper.countStockOrder(paramMap);
-        logger.info("listOrderPage paramMap:{}, totalCount:{}", paramMap, totalCount);
+        // 统计订单信息
+        Map<String, Object> countMap = stockOrderMapper.countStockOrder(paramMap);
+        logger.info("listOrderPage paramMap:{}, countMap:{}", paramMap, countMap);
+
+        int totalCount = Integer.parseInt(String.valueOf(countMap.get("totalCount")));
+        pageParam.setTotalCount(totalCount);
+        // 计算分页信息
+        pageParam.splitPageInstance();
 
         if (totalCount <= 0) {
-            return new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), 0, null);
+            countMap.put("pageBean", new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), totalCount, new ArrayList<>()));
+            return resultBean.init("0000", "请求成功", countMap);
         }
 
         pageParam.setTotalCount(totalCount);
@@ -80,7 +88,8 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
         // 获取分页数据列表
         List<QyjStockOrderEntity> projectList = stockOrderMapper.listStockOrderAndProduct(paramMap);
 
-        return new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), totalCount, projectList);
+        countMap.put("pageBean", new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), totalCount, projectList));
+        return resultBean.init("0000", "请求成功", countMap);
     }
 
     /**

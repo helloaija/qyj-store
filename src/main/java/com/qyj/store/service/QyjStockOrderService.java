@@ -24,7 +24,7 @@ public interface QyjStockOrderService {
 	 * @return
 	 * @throws Exception
 	 */
-	PageBean listStockOrderAndProductPage(PageParam pageParam, Map<String, Object> paramMap) throws Exception;
+	ResultBean listStockOrderAndProductPage(PageParam pageParam, Map<String, Object> paramMap);
 
 	/**
 	 * 添加进货订单
