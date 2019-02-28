@@ -56,10 +56,10 @@
                 <if test="orderAmount != null">
                     order_amount = #{orderAmount,jdbcType=DECIMAL},
                 </if>
-                <if test="modifyAmount != null and modifyAmount != 0">
+                <if test="modifyAmount != null">
                     modify_amount = #{modifyAmount,jdbcType=DECIMAL},
                 </if>
-                <if test="hasPayAmount != null and hasPayAmount != 0">
+                <if test="hasPayAmount != null">
                     has_pay_amount = #{hasPayAmount,jdbcType=DECIMAL},
                 </if>
                 <if test="orderStatus != null">
