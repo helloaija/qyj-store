@@ -1,8 +1,10 @@
 package com.qyj.store.dao;
 
 import com.qyj.store.entity.QyjSellProductEntity;
+import com.qyj.store.model.QyjProductMonthCountModel;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 销售单商品
@@ -45,4 +47,18 @@ public interface QyjSellProductMapper {
      * @return
      */
 	int deleteSellProductBySellId(Long sellId);
+
+	/**
+	 * 获取销售产品按月统计数量
+	 * @param paramMap
+	 * @return
+	 */
+	Map<String, Object> countSellProductMonth(Map<String, Object> paramMap);
+
+	/**
+	 * 获取销售产品按月统计列表
+	 * @param paramMap
+	 * @return
+	 */
+	List<QyjProductMonthCountModel> listSellProductMonth(Map<String, Object> paramMap);
 }

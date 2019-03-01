@@ -68,4 +68,41 @@
 		delete from qyj_sell_product where sell_id = #{sellId}
 	</delete>
 
+	<!--获取销售产品按月统计数量-->
+	<select id="countSellProductMonth" parameterType="java.util.Map" resultType="java.util.Map">
+		select count(distinct(sp.product_id)) totalCount, sum(sp.price * sp.number) totalPrice
+		from qyj_sell_product sp join qyj_product p join qyj_sell_order o on sp.product_id = p.id and sp.sell_id = o.id
+		where 1=1
+		<if test="year != null and year != ''">
+			and date_format(o.order_time, '%Y') = #{year}
+		</if>
+		<if test="month != null and month != ''">
+			and date_format(o.order_time, '%m') = #{month}
+		</if>
+		<if test="pageParam != null">
+			${pageParam.queryCondition}
+		</if>
+	</select>
+
+	<!--获取销售产品按月统计列表-->
+	<select id="listSellProductMonth" parameterType="java.util.Map" resultType="com.qyj.store.model.QyjProductMonthCountModel">
+		select p.id productId, p.title productTitle, p.product_unit productUnit, sum(sp.number) totalNumber, sum(sp.price * sp.number) totalPrice,
+		min(sp.price) minPrice, max(sp.price) maxPrice, count(distinct(o.user_id)) userNumber, count(o.id) orderNumber
+		from qyj_sell_product sp join qyj_product p join qyj_sell_order o on sp.product_id = p.id and sp.sell_id = o.id
+		where 1=1
+		<if test="year != null and year != ''">
+			and date_format(o.order_time, '%Y') = #{year}
+		</if>
+		<if test="month != null and month != ''">
+			and date_format(o.order_time, '%m') = #{month}
+		</if>
+		<if test="pageParam != null">
+			${pageParam.queryCondition}
+		</if>
+		group by sp.product_id order by totalNumber desc
+		<if test="pageParam != null">
+			${pageParam.limit}
+		</if>;
+	</select>
+
 </mapper>
