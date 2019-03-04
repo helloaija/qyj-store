@@ -24,6 +24,9 @@ public class QyjStockProductEntity implements Serializable {
     /** 产品名称 */
     private String productTitle;
 
+    /** 产品单位 */
+    private String productUnit;
+
     /** 产品单价 */
     private BigDecimal price;
 
@@ -88,5 +91,13 @@ public class QyjStockProductEntity implements Serializable {
 
     public void setStockId(Long stockId) {
         this.stockId = stockId;
+    }
+
+    public String getProductUnit() {
+        return productUnit;
+    }
+
+    public void setProductUnit(String productUnit) {
+        this.productUnit = productUnit;
     }
 }

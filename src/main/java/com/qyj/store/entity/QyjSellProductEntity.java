@@ -24,6 +24,9 @@ public class QyjSellProductEntity implements Serializable {
     /** 产品名称 */
     private String productTitle;
 
+    /** 产品单位 */
+    private String productUnit;
+
     /** 产品单价 */
     private BigDecimal price;
 
@@ -100,5 +103,13 @@ public class QyjSellProductEntity implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getProductUnit() {
+        return productUnit;
+    }
+
+    public void setProductUnit(String productUnit) {
+        this.productUnit = productUnit;
     }
 }

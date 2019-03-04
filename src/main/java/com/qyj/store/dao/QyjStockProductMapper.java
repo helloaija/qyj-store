@@ -20,6 +20,13 @@ public interface QyjStockProductMapper {
 	List<QyjStockProductEntity> listStockProductByStockId(Long stockId);
 
 	/**
+	 * 根据订单id查询订单商品
+	 * @param stockId
+	 * @return
+	 */
+	List<QyjStockProductEntity> listStockProductJoinBySellId(Long stockId);
+
+	/**
 	 * 批量插入订单商品
 	 * @param stockProductList
 	 * @return

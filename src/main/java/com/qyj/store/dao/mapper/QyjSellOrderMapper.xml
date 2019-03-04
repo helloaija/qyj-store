@@ -113,7 +113,7 @@
 
         <!--关联订单产品表-->
         <collection property="sellProductList" column="id"
-                    select="com.qyj.store.dao.QyjSellProductMapper.listSellProductBySellId"/>
+                    select="com.qyj.store.dao.QyjSellProductMapper.listSellProductJoinBySellId"/>
     </resultMap>
 
     <!-- 查询条件 -->

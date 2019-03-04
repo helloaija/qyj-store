@@ -145,7 +145,7 @@
 
         <!--关联订单产品表-->
         <collection property="stockProductList" column="id"
-                    select="com.qyj.store.dao.QyjStockProductMapper.listStockProductByStockId"/>
+                    select="com.qyj.store.dao.QyjStockProductMapper.listStockProductJoinBySellId"/>
     </resultMap>
 
     <!-- 统计订单 -->

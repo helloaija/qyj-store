@@ -21,6 +21,13 @@ public interface QyjSellProductMapper {
 	List<QyjSellProductEntity> listSellProductBySellId(Long sellId);
 
 	/**
+	 * 根据订单id查询订单商品关联产品
+	 * @param sellId
+	 * @return
+	 */
+	List<QyjSellProductEntity> listSellProductJoinBySellId(Long sellId);
+
+	/**
 	 * 批量插入订单商品
 	 * @param sellProductList
 	 * @return
