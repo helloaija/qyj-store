@@ -16,4 +16,11 @@ public interface QyjStatisticsService {
      * @return
      */
     ResultBean listSellProductMonthPage(Map<String, Object> paramMap);
+
+    /**
+     * 加载进货产品按月统计
+     * @param paramMap
+     * @return
+     */
+    ResultBean listStockProductMonthPage(Map<String, Object> paramMap);
 }

@@ -24,6 +24,8 @@ public class QyjProductMonthCountModel {
     private int userNumber;
     /** 订单数量 */
     private int orderNumber;
+    /** 平均进货价 */
+    private BigDecimal avgStockPrice;
 
     public Long getProductId() {
         return productId;
@@ -95,5 +97,13 @@ public class QyjProductMonthCountModel {
 
     public void setProductUnit(String productUnit) {
         this.productUnit = productUnit;
+    }
+
+    public BigDecimal getAvgStockPrice() {
+        return avgStockPrice;
+    }
+
+    public void setAvgStockPrice(BigDecimal avgStockPrice) {
+        this.avgStockPrice = avgStockPrice;
     }
 }

@@ -46,4 +46,26 @@ public class QyjStatisticsController extends BaseController {
 
         return qyjStatisticsService.listSellProductMonthPage(paramMap);
     }
+
+    /**
+     * 获取产品进货按月统计数据
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/listStockProductMonthPage", method = RequestMethod.GET)
+    public ResultBean listStockProductMonthPage(HttpServletRequest request) {
+        PageParam pageParam = this.initPageParam(request);
+        // 年份
+        String year = request.getParameter("year");
+        // 月份
+        String month = request.getParameter("month");
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("year", year);
+        paramMap.put("month", month);
+        paramMap.put("pageParam", pageParam);
+
+        return qyjStatisticsService.listStockProductMonthPage(paramMap);
+    }
 }

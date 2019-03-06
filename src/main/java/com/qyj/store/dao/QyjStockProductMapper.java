@@ -2,8 +2,10 @@ package com.qyj.store.dao;
 
 import com.qyj.store.entity.QyjOrderGoodsEntity;
 import com.qyj.store.entity.QyjStockProductEntity;
+import com.qyj.store.model.QyjProductMonthCountModel;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 进货单商品
@@ -53,4 +55,18 @@ public interface QyjStockProductMapper {
 	 * @return
 	 */
 	int deleteStockProductByStockId(Long stockId);
+
+	/**
+	 * 获取进货产品按月统计数量
+	 * @param paramMap
+	 * @return
+	 */
+	Map<String, Object> countStockProductMonth(Map<String, Object> paramMap);
+
+	/**
+	 * 获取进货产品按月统计列表
+	 * @param paramMap
+	 * @return
+	 */
+	List<QyjProductMonthCountModel> listStockProductMonth(Map<String, Object> paramMap);
 }

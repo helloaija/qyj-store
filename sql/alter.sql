@@ -30,5 +30,10 @@ alter table sys_user add open_id varchar(64) null default null comment '微信�
 alter table qyj_sell_product drop column product_title;
 alter table qyj_stock_product drop column product_title;
 
+alter table qyj_sell_product add index index_product_id(product_id) using btree,
+		add index index_sell_id(sell_id) using btree;
+alter table qyj_stock_product add index index_product_id(product_id) using btree,
+		add index index_stock_id(stock_id) using btree;
+
 
 
