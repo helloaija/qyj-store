@@ -341,7 +341,7 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
                 resultBean.init("0002", "产品数量不正确");
                 return false;
             }
-            if (sellProductEntity.getPrice() == null || sellProductEntity.getPrice().doubleValue() <= 0) {
+            if (sellProductEntity.getPrice() == null || sellProductEntity.getPrice().doubleValue() < 0) {
                 resultBean.init("0002", "产品金额不正确");
                 return false;
             }
