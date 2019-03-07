@@ -132,7 +132,7 @@ public class QyjStatisticsServiceImpl  implements QyjStatisticsService {
         ResultBean resultBean = new ResultBean();
         List<Map<String, Object>> sellMonthData = qyjSellProductMapper.getMonthSellData(year);
         for (Map<String, Object> map : sellMonthData) {
-            int index = Integer.parseInt(String.valueOf(map.get("sellMonth")));
+            int index = Integer.parseInt(String.valueOf(map.get("sellMonth"))) - 1;
             if ("MANURE".equals(map.get("productType"))) {
                 manureSellData[index] = Double.parseDouble(String.valueOf(map.get("monthPrice")));
             }
@@ -144,7 +144,7 @@ public class QyjStatisticsServiceImpl  implements QyjStatisticsService {
 
         List<Map<String, Object>> stockMonthData = qyjStockProductMapper.getMonthStockData(year);
         for (Map<String, Object> map : stockMonthData) {
-            int index = Integer.parseInt(String.valueOf(map.get("stockMonth")));
+            int index = Integer.parseInt(String.valueOf(map.get("stockMonth"))) - 1;
             if ("MANURE".equals(map.get("productType"))) {
                 manureStockData[index] = Double.parseDouble(String.valueOf(map.get("monthPrice")));
             }
