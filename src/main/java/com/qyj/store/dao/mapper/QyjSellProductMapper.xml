@@ -116,4 +116,12 @@
 		</if>
 	</select>
 
+	<!--获取每个月销售额，按产品类型统计-->
+	<select id="getMonthSellData" parameterType="java.lang.Integer" resultType="java.util.Map">
+		select p.product_type productType, date_format(o.order_time, '%c') sellMonth, sum(sp.price * sp.number) monthPrice
+		from qyj_sell_product sp join qyj_product p join qyj_sell_order o on sp.product_id = p.id and sp.sell_id = o.id
+		where date_format(o.order_time, '%Y') = #{year}
+		group by p.product_type, date_format(o.order_time, '%c');
+	</select>
+
 </mapper>

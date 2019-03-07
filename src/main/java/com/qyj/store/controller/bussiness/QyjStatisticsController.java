@@ -68,4 +68,17 @@ public class QyjStatisticsController extends BaseController {
 
         return qyjStatisticsService.listStockProductMonthPage(paramMap);
     }
+
+    /**
+     * 获取按月图标数据
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getProductMonthData", method = RequestMethod.GET)
+    public ResultBean getProductMonthData(HttpServletRequest request) {
+        // 年份
+        int year = Integer.parseInt(request.getParameter("year"));
+        return qyjStatisticsService.getProductMonthData(year);
+    }
 }

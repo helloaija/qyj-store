@@ -10,7 +10,9 @@ import com.qyj.store.service.QyjStatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -97,5 +99,61 @@ public class QyjStatisticsServiceImpl  implements QyjStatisticsService {
         countMap.put("pageBean", pageBean);
 
         return resultBean.init("0000", "success", countMap);
+    }
+
+    /**
+     * 获取按月图标数据
+     * @param year
+     * @return
+     */
+    @Override
+    public ResultBean getProductMonthData(int year) {
+        // 化肥按月销售额
+        Double[] manureSellData = {0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D};
+        // 农药按月销售额
+        Double[] pesticideSellData = {0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D};
+        // 化肥按月进货额
+        Double[] manureStockData = {0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D};
+        // 农药按月进货额
+        Double[] pesticideStockData = {0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D};
+        // 按月销售额
+        Double[] sumSellData = {0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D};
+        // 按月进货额
+        Double[] sumStockData = {0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D};
+
+        Map<String, Double[]> resultMap = new HashMap<>();
+        resultMap.put("manureSellData", manureSellData);
+        resultMap.put("pesticideSellData", pesticideSellData);
+        resultMap.put("manureStockData", manureStockData);
+        resultMap.put("pesticideStockData", pesticideStockData);
+        resultMap.put("sumSellData", sumSellData);
+        resultMap.put("sumStockData", sumStockData);
+
+        ResultBean resultBean = new ResultBean();
+        List<Map<String, Object>> sellMonthData = qyjSellProductMapper.getMonthSellData(year);
+        for (Map<String, Object> map : sellMonthData) {
+            int index = Integer.parseInt(String.valueOf(map.get("sellMonth")));
+            if ("MANURE".equals(map.get("productType"))) {
+                manureSellData[index] = Double.parseDouble(String.valueOf(map.get("monthPrice")));
+            }
+            if ("PESTICIDE".equals(map.get("productType"))) {
+                pesticideSellData[index] = Double.parseDouble(String.valueOf(map.get("monthPrice")));
+            }
+            sumSellData[index] = sumSellData[index] + Double.parseDouble(String.valueOf(map.get("monthPrice")));
+        }
+
+        List<Map<String, Object>> stockMonthData = qyjStockProductMapper.getMonthStockData(year);
+        for (Map<String, Object> map : stockMonthData) {
+            int index = Integer.parseInt(String.valueOf(map.get("stockMonth")));
+            if ("MANURE".equals(map.get("productType"))) {
+                manureStockData[index] = Double.parseDouble(String.valueOf(map.get("monthPrice")));
+            }
+            if ("PESTICIDE".equals(map.get("productType"))) {
+                pesticideStockData[index] = Double.parseDouble(String.valueOf(map.get("monthPrice")));
+            }
+            sumStockData[index] = sumStockData[index] + Double.parseDouble(String.valueOf(map.get("monthPrice")));
+        }
+
+        return resultBean.init("0000", "success", resultMap);
     }
 }

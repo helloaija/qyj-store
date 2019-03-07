@@ -69,4 +69,11 @@ public interface QyjStockProductMapper {
 	 * @return
 	 */
 	List<QyjProductMonthCountModel> listStockProductMonth(Map<String, Object> paramMap);
+
+	/**
+	 * 获取每个月进货额，按产品类型统计
+	 * @param year
+	 * @return
+	 */
+	List<Map<String, Object>> getMonthStockData(int year);
 }

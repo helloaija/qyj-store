@@ -23,4 +23,11 @@ public interface QyjStatisticsService {
      * @return
      */
     ResultBean listStockProductMonthPage(Map<String, Object> paramMap);
+
+    /**
+     * 获取按月图标数据
+     * @param year
+     * @return
+     */
+    ResultBean getProductMonthData(int year);
 }
