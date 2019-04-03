@@ -80,7 +80,7 @@
 			select sp.product_id, sum(sp.price * sp.number) totalPrice,
 				(select sum(sp.number) * sum(price * number) / sum(number) from qyj_stock_product where product_id = sp.product_id) as stockPrice
 			from qyj_sell_product sp join qyj_product p join qyj_sell_order o on sp.product_id = p.id and sp.sell_id = o.id
-			where 1=1
+			where 1=1 and sp.price > 0
 			<if test="year != null and year != ''">
 				and date_format(o.order_time, '%Y') = #{year}
 			</if>
@@ -100,7 +100,7 @@
 			min(sp.price) minPrice, max(sp.price) maxPrice, count(distinct(o.user_id)) userNumber, count(o.id) orderNumber,
 			(select sum(price * number) / sum(number) from qyj_stock_product where product_id = sp.product_id) as avgStockPrice
 		from qyj_sell_product sp join qyj_product p join qyj_sell_order o on sp.product_id = p.id and sp.sell_id = o.id
-		where 1=1
+		where 1=1 and sp.price > 0
 		<if test="year != null and year != ''">
 			and date_format(o.order_time, '%Y') = #{year}
 		</if>
