@@ -327,7 +327,7 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
                 resultBean.init("0002", "产品数量不正确");
                 return false;
             }
-            if (stockProductEntity.getPrice() == null || stockProductEntity.getPrice().doubleValue() <= 0) {
+            if (stockProductEntity.getPrice() == null || stockProductEntity.getPrice().doubleValue() < 0) {
                 resultBean.init("0002", "产品金额不正确");
                 return false;
             }
