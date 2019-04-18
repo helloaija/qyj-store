@@ -56,5 +56,13 @@ public interface QyjStockOrderService {
 	 * @throws Exception
 	 */
 	ResultBean deleteStockOrder(Long stockId) throws Exception;
+
+	/**
+	 * 加载产品分页信息，用于选择展示产品信息
+	 * @param pageParam
+	 * @param paramMap
+	 * @return
+	 */
+	ResultBean listProductStockInfo(PageParam pageParam, Map<String, Object> paramMap);
 	
 }

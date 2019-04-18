@@ -7,6 +7,7 @@
 		<result column="product_id" jdbcType="BIGINT" property="productId" />
 		<result column="product_title" property="productTitle" />
 		<result column="product_unit" property="productUnit" />
+		<result column="stock_price" jdbcType="DECIMAL" property="stockPrice" />
 		<result column="price" jdbcType="DECIMAL" property="price" />
 		<result column="number" jdbcType="INTEGER" property="number" />
 		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -14,7 +15,7 @@
 	</resultMap>
 
 	<sql id="baseColumnList">
-		id, sell_id, product_id, price, number, create_time, update_time
+		id, sell_id, product_id, stock_price, price, number, create_time, update_time
 	</sql>
 	
 	<!-- 根据订单获取订单商品 -->
@@ -24,7 +25,7 @@
 
 	<!-- 根据订单获取订单商品 -->
 	<select id="listSellProductJoinBySellId" parameterType="java.lang.Long" resultMap="baseResultMap">
-		select sp.id, sp.sell_id, sp.product_id, p.title product_title, p.product_unit, sp.price, sp.number,
+		select sp.id, sp.sell_id, sp.product_id, p.title product_title, p.product_unit, sp.stock_price, sp.price, sp.number,
 				sp.create_time, sp.update_time
 		from qyj_sell_product sp left join qyj_product p on sp.product_id = p.id
 		where sp.sell_id = #{sellId}
@@ -32,9 +33,9 @@
 
 	<!-- 批量插入订单商品 -->
 	<insert id="insertSellProductList" parameterType="java.util.List">
-		insert into qyj_sell_product (sell_id, product_id, price, number, create_time, update_time) values
+		insert into qyj_sell_product (sell_id, product_id, stock_price, price, number, create_time, update_time) values
 		<foreach collection="list" item="item" index="index" separator=",">
-			(#{item.sellId}, #{item.productId}, #{item.price}, #{item.number},
+			(#{item.sellId}, #{item.productId}, #{item.stockPrice}, #{item.price}, #{item.number},
 			#{item.createTime}, #{item.updateTime})
 		</foreach>
 	</insert>
@@ -46,6 +47,9 @@
 				<trim suffix="" suffixOverrides=",">
 					<if test="item.productId != null">
 						product_id = #{item.productId},
+					</if>
+					<if test="item.stockPrice != null">
+						stock_price = #{item.stockPrice},
 					</if>
 					<if test="item.price != null">
 						price = #{item.price},

@@ -1,5 +1,7 @@
 package com.qyj.store.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.qyj.common.exception.ValidException;
 import com.qyj.common.page.PageBean;
 import com.qyj.common.page.PageParam;
@@ -10,7 +12,6 @@ import com.qyj.store.common.util.Utils;
 import com.qyj.store.dao.QyjProductMapper;
 import com.qyj.store.dao.QyjStockOrderMapper;
 import com.qyj.store.dao.QyjStockProductMapper;
-import com.qyj.store.entity.QyjOrderEntity;
 import com.qyj.store.entity.QyjProductEntity;
 import com.qyj.store.entity.QyjStockOrderEntity;
 import com.qyj.store.entity.QyjStockProductEntity;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.transform.Result;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -365,6 +365,53 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
         }
 
         return true;
+    }
+
+    /**
+     * 加载产品分页信息，用于选择展示产品信息，加入进货价
+     * @param pageParam
+     * @param paramMap
+     * @return
+     */
+    @Override
+    public ResultBean listProductStockInfo(PageParam pageParam, Map<String, Object> paramMap) {
+        // 获取产品分页数据
+        PageBean pageBean = this.productService.listProjectPage(pageParam, paramMap);
+        List<QyjProductEntity> recordList = (List<QyjProductEntity>) pageBean.getRecordList();
+
+        if (recordList != null && !recordList.isEmpty()) {
+            StringBuilder productIdSb = new StringBuilder();
+            for (QyjProductEntity entity: recordList) {
+                if (productIdSb.length() > 0) {
+                    productIdSb.append(",");
+                }
+                productIdSb.append(entity.getId());
+            }
+
+            // 获取产品进货价， 并把进货价加入到产品信息中
+            List<Map<String, Object>> pricesMapList = stockProductMapper.listProductStockPrice(productIdSb.toString());
+            if (pricesMapList != null && !pricesMapList.isEmpty()) {
+                Map<Long, String> pricesMap = new HashMap<>();
+                for (Map<String, Object> map : pricesMapList) {
+                    pricesMap.put(Long.parseLong(String.valueOf(map.get("productId"))), String.valueOf(map.get("prices")));
+                }
+
+                List<JSONObject> recordJsonList = new ArrayList<>();
+                for (QyjProductEntity entity: recordList) {
+                    JSONObject json = (JSONObject) JSON.toJSON(entity);
+                    String prices = pricesMap.get(entity.getId());
+                    if (StringUtils.isEmpty(prices)) {
+                        json.put("stockPrices", new String[]{});
+                    } else {
+                        json.put("stockPrices", prices.split(";"));
+                    }
+                    recordJsonList.add(json);
+                }
+
+                pageBean.setRecordList(recordJsonList);
+            }
+        }
+        return new ResultBean("0000", "请求成功", pageBean);
     }
 
     @Autowired

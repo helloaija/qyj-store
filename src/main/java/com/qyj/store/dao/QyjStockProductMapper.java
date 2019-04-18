@@ -3,6 +3,7 @@ package com.qyj.store.dao;
 import com.qyj.store.entity.QyjOrderGoodsEntity;
 import com.qyj.store.entity.QyjStockProductEntity;
 import com.qyj.store.model.QyjProductMonthCountModel;
+import org.apache.ibatis.annotations.MapKey;
 
 import java.util.List;
 import java.util.Map;
@@ -76,4 +77,11 @@ public interface QyjStockProductMapper {
 	 * @return
 	 */
 	List<Map<String, Object>> getMonthStockData(int year);
+
+	/**
+	 * 获取产品进价
+	 * @param productIds 产品id，用‘,’分隔
+	 * @return
+	 */
+	List<Map<String, Object>> listProductStockPrice(String productIds);
 }

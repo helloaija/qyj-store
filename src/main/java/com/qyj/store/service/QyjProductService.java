@@ -24,7 +24,7 @@ public interface QyjProductService {
      * @return
      * @throws Exception
      */
-    PageBean listProjectPage(PageParam pageParam, Map<String, Object> paramMap) throws Exception;
+    PageBean listProjectPage(PageParam pageParam, Map<String, Object> paramMap);
 
     /**
      * 根据产品id获取产品信息

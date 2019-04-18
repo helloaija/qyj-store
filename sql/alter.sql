@@ -35,5 +35,11 @@ alter table qyj_sell_product add index index_product_id(product_id) using btree,
 alter table qyj_stock_product add index index_product_id(product_id) using btree,
 		add index index_stock_id(stock_id) using btree;
 
+-- 2019-04-18
+alter table qyj_sell_product add column stock_price decimal(11,2) not null default 0.00 comment '进货价' after product_id;
+update qyj_sell_product se left join (select product_id, price from qyj_stock_product group by product_id) st on se.product_id = st.product_id
+set se.stock_price = st.price;
+
+
 
 

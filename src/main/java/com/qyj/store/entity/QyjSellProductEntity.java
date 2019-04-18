@@ -27,6 +27,9 @@ public class QyjSellProductEntity implements Serializable {
     /** 产品单位 */
     private String productUnit;
 
+    /** 进货价 */
+    private BigDecimal stockPrice;
+
     /** 产品单价 */
     private BigDecimal price;
 
@@ -65,7 +68,15 @@ public class QyjSellProductEntity implements Serializable {
 		this.productTitle = productTitle;
 	}
 
-	public BigDecimal getPrice() {
+    public BigDecimal getStockPrice() {
+        return stockPrice;
+    }
+
+    public void setStockPrice(BigDecimal stockPrice) {
+        this.stockPrice = stockPrice;
+    }
+
+    public BigDecimal getPrice() {
         return price;
     }
 

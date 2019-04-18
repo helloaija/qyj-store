@@ -61,7 +61,7 @@ public class QyjProductServiceImpl implements QyjProductService {
      * @throws Exception
      */
     @Override
-    public PageBean listProjectPage(PageParam pageParam, Map<String, Object> paramMap) throws Exception {
+    public PageBean listProjectPage(PageParam pageParam, Map<String, Object> paramMap) {
         if (pageParam == null) {
             pageParam = new PageParam();
         }

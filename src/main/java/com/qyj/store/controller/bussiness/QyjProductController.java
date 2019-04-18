@@ -3,7 +3,6 @@ package com.qyj.store.controller.bussiness;
 import com.qyj.common.page.PageBean;
 import com.qyj.common.page.PageParam;
 import com.qyj.common.page.ResultBean;
-import com.qyj.store.common.enums.CommonEnums.ProductStatusEnum;
 import com.qyj.store.config.QyjUserDetails;
 import com.qyj.store.controller.BaseController;
 import com.qyj.store.entity.QyjProductEntity;
@@ -41,7 +40,7 @@ public class QyjProductController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "/listProductPage", method = RequestMethod.GET)
-    public ResultBean listProductPage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ResultBean listProductPage(HttpServletRequest request, HttpServletResponse response) {
         PageParam pageParam = this.initPageParam(request);
         String id = request.getParameter("id");
         // 产品标题

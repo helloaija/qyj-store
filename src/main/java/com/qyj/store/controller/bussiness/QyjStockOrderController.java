@@ -1,18 +1,11 @@
 package com.qyj.store.controller.bussiness;
 
-import com.qyj.common.page.PageBean;
 import com.qyj.common.page.PageParam;
 import com.qyj.common.page.ResultBean;
-import com.qyj.common.utils.CommonEnums.OrderStatusEnum;
-import com.qyj.store.common.constant.CommonConstant;
-import com.qyj.store.common.util.SessionUtil;
 import com.qyj.store.config.QyjUserDetails;
 import com.qyj.store.controller.BaseController;
 import com.qyj.store.entity.QyjStockOrderEntity;
-import com.qyj.store.service.QyjOrderService;
 import com.qyj.store.service.QyjStockOrderService;
-import com.qyj.store.vo.QyjOrderBean;
-import com.qyj.store.vo.SysUserBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -146,5 +136,34 @@ public class QyjStockOrderController extends BaseController {
         }
 
         return stockOrderService.deleteStockOrder(stockId);
+    }
+
+    /**
+     * 加载产品分页信息，用于选择展示产品信息
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/listProductStockInfo", method = RequestMethod.GET)
+    public ResultBean listProductStockInfo(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        PageParam pageParam = this.initPageParam(request);
+        String id = request.getParameter("id");
+        // 产品标题
+        String productTitle = request.getParameter("title");
+        // 产品类型
+        String productType = request.getParameter("productType");
+        // 创建开始时间
+        String createTimeBegin = request.getParameter("createTimeBegin");
+        // 创建结束时间
+        String createTimeEnd = request.getParameter("createTimeEnd");
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("id", id);
+        paramMap.put("title_like", productTitle);
+        paramMap.put("productType", productType);
+        paramMap.put("createTimeBegin", createTimeBegin);
+        paramMap.put("createTimeEnd", createTimeEnd);
+        pageParam.setOrderByCondition("create_time desc");
+        return stockOrderService.listProductStockInfo(pageParam, paramMap);
     }
 }

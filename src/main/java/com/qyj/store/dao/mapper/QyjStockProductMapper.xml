@@ -114,4 +114,9 @@
 		group by p.product_type, date_format(o.order_time, '%c');
 	</select>
 
+	<!--获取产品进价-->
+	<select id="listProductStockPrice" parameterType="java.lang.String" resultType="java.util.Map">
+		select product_id productId, group_concat(distinct(price) SEPARATOR ';') prices from qyj_stock_product where product_id in (${_parameter}) group by product_id;
+	</select>
+
 </mapper>
