@@ -44,6 +44,11 @@ public class QyjAccessDecisionManager implements AccessDecisionManager {
             }
         }
 
+        if (url.contains("adminapp")) {
+            // 暂时允许app访问
+            return;
+        }
+
         // 用户拥有的访问路径
         List<SysMenuModel> menuList = userDetails.getMenuList();
 
