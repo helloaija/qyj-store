@@ -5,12 +5,14 @@ import java.util.Map;
 
 import com.qyj.store.entity.QyjProductEntity;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 /**
  * 产品信息mapper
  * @author CTF_stone
  *
  */
+@Repository
 public interface QyjProductMapper {
 	
 	/**

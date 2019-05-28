@@ -2,6 +2,7 @@ package com.qyj.store.dao;
 
 import com.qyj.store.entity.QyjSellProductEntity;
 import com.qyj.store.model.QyjProductMonthCountModel;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Map;
  * @author CTF_stone
  *
  */
+@Repository
 public interface QyjSellProductMapper {
 
 	/**

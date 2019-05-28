@@ -71,7 +71,7 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
             pageParam = new PageParam();
         }
         if (paramMap == null) {
-            paramMap = new HashMap<String, Object>();
+            paramMap = new HashMap<>();
         }
 
         paramMap.put("pageParam", pageParam);
@@ -423,6 +423,7 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
      * @return
      * @throws Exception
      */
+    @Override
     public ResultBean listUserOrderSumPage(PageParam pageParam, Map<String, Object> paramMap) {
         ResultBean resultBean = new ResultBean();
         if (pageParam == null) {
