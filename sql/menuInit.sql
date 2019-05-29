@@ -39,6 +39,8 @@ INSERT INTO `qyj_store`.`sys_menu`(`name`, `menuType`, `menuCode`, `sortNumber`,
 INSERT INTO `qyj_store`.`sys_menu`(`name`, `menuType`, `menuCode`, `sortNumber`, `url`, `moreUrl`, `status`, `remark`, `createTime`, `createUser`, `updateTime`, `updateUser`) VALUES ('销售产品按月统计', 'MENU', 'homeSellProductStatistics', 22, 'admin/statistics/listSellProductMonthPage', NULL, 'enable', NULL, '2018-11-28 10:10:29', 1, '2018-11-28 10:10:29', 1);
 INSERT INTO `qyj_store`.`sys_menu`(`name`, `menuType`, `menuCode`, `sortNumber`, `url`, `moreUrl`, `status`, `remark`, `createTime`, `createUser`, `updateTime`, `updateUser`) VALUES ('进货产品按月统计', 'MENU', 'homeStockProductStatistics', 23, 'admin/statistics/listStockProductMonthPage', NULL, 'enable', NULL, '2018-11-28 10:10:29', 1, '2018-11-28 10:10:29', 1);
 INSERT INTO `qyj_store`.`sys_menu`(`name`, `menuType`, `menuCode`, `sortNumber`, `url`, `moreUrl`, `status`, `remark`, `createTime`, `createUser`, `updateTime`, `updateUser`) VALUES ('进销图表统计', 'MENU', 'homeEchartsStatistics', 24, 'admin/statistics/getProductMonthData', NULL, 'enable', NULL, '2018-11-28 10:10:29', 1, '2018-11-28 10:10:29', 1);
+INSERT INTO `qyj_store`.`sys_menu`(`name`, `menuType`, `menuCode`, `sortNumber`, `url`, `moreUrl`, `status`, `remark`, `createTime`, `createUser`, `updateTime`, `updateUser`) VALUES ('销售产品明细列表', 'MENU', 'homeSellProductDetailedList', 25, 'admin/statistics/getSellProductPage;admin/statistics/exportSellProductDetail', NULL, 'enable', NULL, now(), 1, now(), 1);
+
 
 
 

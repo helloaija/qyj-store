@@ -7,11 +7,21 @@
 		<result column="product_id" jdbcType="BIGINT" property="productId" />
 		<result column="product_title" property="productTitle" />
 		<result column="product_unit" property="productUnit" />
+		<result column="product_type" property="productType" />
 		<result column="stock_price" jdbcType="DECIMAL" property="stockPrice" />
 		<result column="price" jdbcType="DECIMAL" property="price" />
 		<result column="number" jdbcType="INTEGER" property="number" />
 		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
 		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+
+		<!--单据编号-->
+		<result column="order_number" property="orderNumber" />
+		<!--交易时间-->
+		<result column="order_time" property="orderTime" />
+		<!--购买人-->
+		<result column="user_name" property="userName" />
+		<!--订单状态-->
+		<result column="order_status" property="orderStatus" />
 	</resultMap>
 
 	<sql id="baseColumnList">
@@ -128,4 +138,46 @@
 		group by p.product_type, date_format(o.order_time, '%c');
 	</select>
 
+	<!--查询条件-->
+	<sql id="sellProductQueryParam">
+		<if test="userName != null and userName != ''">
+			and u.user_name like concat('%', #{userName}, '%')
+		</if>
+		<if test="productTitle != null and productTitle != ''">
+			and p.title like concat('%', #{productTitle}, '%')
+		</if>
+		<if test="orderTimeBegin != null and orderTimeBegin != ''">
+			<![CDATA[and so.order_time >= #{orderTimeBegin}]]>
+		</if>
+		<if test="orderTimeEnd != null and orderTimeEnd != ''">
+			<![CDATA[and so.order_time < DATE_FORMAT(date_add(#{orderTimeEnd,jdbcType=TIMESTAMP}, interval 1 day), '%Y-%c-%d')]]>
+		</if>
+	</sql>
+
+	<!--统计获取订单信息-->
+	<select id="countSellProductAllInfo" parameterType="java.util.Map" resultType="java.util.Map">
+		select count(sp.id) totalCount, count(distinct sp.product_id) totalProductCount, count(distinct u.id) totalUserCount
+		from qyj_sell_product sp left join qyj_sell_order so on sp.sell_id = so.id
+		left join qyj_product p on sp.product_id = p.id left join qyj_user u on so.user_id = u.id
+		where 1=1
+		<include refid="sellProductQueryParam"></include>
+		<if test="pageParam != null">
+			${pageParam.queryCondition}
+		</if>
+	</select>
+
+	<!--获取订单信息，关联产品、用户、订单-->
+	<select id="listSellProductAllInfo" parameterType="java.util.Map" resultMap="baseResultMap">
+		select u.user_name, sp.product_id, p.title product_title, p.product_unit, p.product_type, sp.price, sp.number,
+		sp.stock_price,  so.order_number,  so.order_time, so.order_status
+		from qyj_sell_product sp left join qyj_sell_order so on sp.sell_id = so.id
+				left join qyj_product p on sp.product_id = p.id left join qyj_user u on so.user_id = u.id
+		where 1=1
+		<include refid="sellProductQueryParam"></include>
+		<if test="pageParam != null">
+			${pageParam.queryCondition}
+			${pageParam.orderByCondition}
+			${pageParam.limit}
+		</if>
+	</select>
 </mapper>

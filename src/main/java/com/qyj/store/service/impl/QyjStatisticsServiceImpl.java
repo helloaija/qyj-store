@@ -5,12 +5,12 @@ import com.qyj.common.page.PageParam;
 import com.qyj.common.page.ResultBean;
 import com.qyj.store.dao.QyjSellProductMapper;
 import com.qyj.store.dao.QyjStockProductMapper;
+import com.qyj.store.entity.QyjSellProductEntity;
 import com.qyj.store.model.QyjProductMonthCountModel;
 import com.qyj.store.service.QyjStatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.Map;
  * @author shitl
  */
 @Service
-public class QyjStatisticsServiceImpl  implements QyjStatisticsService {
+public class QyjStatisticsServiceImpl implements QyjStatisticsService {
 
     @Autowired
     private QyjSellProductMapper qyjSellProductMapper;
@@ -155,5 +155,62 @@ public class QyjStatisticsServiceImpl  implements QyjStatisticsService {
         }
 
         return resultBean.init("0000", "success", resultMap);
+    }
+
+    /**
+     * 加载销售产品数据
+     * @param paramMap
+     * @return
+     */
+    @Override
+    public ResultBean listSellProductPage(Map<String, Object> paramMap) {
+        ResultBean resultBean = new ResultBean();
+
+        PageParam pageParam = (PageParam) paramMap.get("pageParam");
+        if (pageParam == null) {
+            pageParam = new PageParam();
+            paramMap.put("pageParam", pageParam);
+        }
+
+        Map<String, Object> countMap = qyjSellProductMapper.countSellProductAllInfo(paramMap);
+        int totalCount = Integer.parseInt(String.valueOf(countMap.get("totalCount")));
+
+        pageParam.setTotalCount(totalCount);
+        pageParam.splitPageInstance();
+        pageParam.setOrderByCondition("so.order_time desc");
+
+        if (totalCount == 0) {
+            PageBean pageBean = new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), pageParam.getTotalCount(),
+                    new ArrayList<QyjProductMonthCountModel>());
+            countMap.put("pageBean", pageBean);
+            return resultBean.init("0000", "success", countMap);
+        }
+
+        List<QyjSellProductEntity> list = qyjSellProductMapper.listSellProductAllInfo(paramMap);
+        PageBean pageBean = new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(),
+                pageParam.getTotalCount(), list);
+        countMap.put("pageBean", pageBean);
+
+        return resultBean.init("0000", "success", countMap);
+    }
+
+    /**
+     * 统计获取订单信息
+     * @param paramMap
+     * @return
+     */
+    @Override
+    public Map<String, Object> countSellProductAllInfo(Map<String, Object> paramMap) {
+        return qyjSellProductMapper.countSellProductAllInfo(paramMap);
+    }
+
+    /**
+     * 获取订单信息，关联产品、用户、订单
+     * @param paramMap
+     * @return
+     */
+    @Override
+    public List<QyjSellProductEntity> listSellProductAllInfo(Map<String, Object> paramMap) {
+        return qyjSellProductMapper.listSellProductAllInfo(paramMap);
     }
 }

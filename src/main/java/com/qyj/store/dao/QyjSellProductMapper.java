@@ -77,4 +77,18 @@ public interface QyjSellProductMapper {
 	 * @return
 	 */
 	List<Map<String, Object>> getMonthSellData(int year);
+
+    /**
+     * 统计获取订单信息
+     * @param paramMap
+     * @return
+     */
+    Map<String, Object> countSellProductAllInfo(Map<String, Object> paramMap);
+
+    /**
+     * 获取订单信息，关联产品、用户、订单
+     * @param paramMap
+     * @return
+     */
+    List<QyjSellProductEntity> listSellProductAllInfo(Map<String, Object> paramMap);
 }

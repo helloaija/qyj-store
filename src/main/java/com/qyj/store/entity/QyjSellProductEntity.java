@@ -9,23 +9,25 @@ import java.util.Date;
 /**
  * 销售订单商品
  * @author CTF_stone
- *
  */
 public class QyjSellProductEntity implements Serializable {
 
-	private Long id;
+    private Long id;
 
     /** 订单id */
     private Long sellId;
 
     /** 产品id */
     private Long productId;
-    
+
     /** 产品名称 */
     private String productTitle;
 
     /** 产品单位 */
     private String productUnit;
+
+    /** 产品类型 */
+    private String productType;
 
     /** 进货价 */
     private BigDecimal stockPrice;
@@ -44,6 +46,18 @@ public class QyjSellProductEntity implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
+    /** 单据编号 */
+    private String orderNumber;
+
+    /** 交易时间 */
+    private Date orderTime;
+
+    /** 购买人 */
+    private String userName;
+
+    /** 订单状态 */
+    private String orderStatus;
+
     public Long getId() {
         return id;
     }
@@ -61,12 +75,12 @@ public class QyjSellProductEntity implements Serializable {
     }
 
     public String getProductTitle() {
-		return productTitle;
-	}
+        return productTitle;
+    }
 
-	public void setProductTitle(String productTitle) {
-		this.productTitle = productTitle;
-	}
+    public void setProductTitle(String productTitle) {
+        this.productTitle = productTitle;
+    }
 
     public BigDecimal getStockPrice() {
         return stockPrice;
@@ -122,5 +136,45 @@ public class QyjSellProductEntity implements Serializable {
 
     public void setProductUnit(String productUnit) {
         this.productUnit = productUnit;
+    }
+
+    public String getOrderNumber() {
+        return orderNumber;
+    }
+
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+    public Date getOrderTime() {
+        return orderTime;
+    }
+
+    public void setOrderTime(Date orderTime) {
+        this.orderTime = orderTime;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(String orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public String getProductType() {
+        return productType;
+    }
+
+    public void setProductType(String productType) {
+        this.productType = productType;
     }
 }

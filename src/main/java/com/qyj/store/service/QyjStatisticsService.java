@@ -1,7 +1,9 @@
 package com.qyj.store.service;
 
 import com.qyj.common.page.ResultBean;
+import com.qyj.store.entity.QyjSellProductEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,4 +32,25 @@ public interface QyjStatisticsService {
      * @return
      */
     ResultBean getProductMonthData(int year);
+
+    /**
+     * 加载销售产品数据
+     * @param paramMap
+     * @return
+     */
+    ResultBean listSellProductPage(Map<String, Object> paramMap);
+
+    /**
+     * 统计获取订单信息
+     * @param paramMap
+     * @return
+     */
+    Map<String, Object> countSellProductAllInfo(Map<String, Object> paramMap);
+
+    /**
+     * 获取订单信息，关联产品、用户、订单
+     * @param paramMap
+     * @return
+     */
+    List<QyjSellProductEntity> listSellProductAllInfo(Map<String, Object> paramMap);
 }
