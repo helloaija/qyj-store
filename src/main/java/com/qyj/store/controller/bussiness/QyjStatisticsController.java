@@ -110,6 +110,7 @@ public class QyjStatisticsController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getSellProductPage", method = RequestMethod.GET)
     public ResultBean getSellProductPage(HttpServletRequest request) {
+        PageParam pageParam = this.initPageParam(request);
         // 用户姓名
         String userName = request.getParameter("userName");
         // 产品名称
@@ -118,6 +119,7 @@ public class QyjStatisticsController extends BaseController {
         String orderTimeBegin = request.getParameter("orderTimeBegin");
         String orderTimeEnd = request.getParameter("orderTimeEnd");
         Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("pageParam", pageParam);
 
         if (!StringUtils.isEmpty(userName) && !StringUtils.isEmpty(userName.trim())) {
             paramMap.put("userName", userName);
