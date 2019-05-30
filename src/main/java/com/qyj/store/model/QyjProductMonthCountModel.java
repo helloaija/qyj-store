@@ -26,6 +26,8 @@ public class QyjProductMonthCountModel {
     private int orderNumber;
     /** 平均进货价 */
     private BigDecimal avgStockPrice;
+    /** 利润总额 */
+    private BigDecimal totalProfitAmount;
 
     public Long getProductId() {
         return productId;
@@ -105,5 +107,13 @@ public class QyjProductMonthCountModel {
 
     public void setAvgStockPrice(BigDecimal avgStockPrice) {
         this.avgStockPrice = avgStockPrice;
+    }
+
+    public BigDecimal getTotalProfitAmount() {
+        return totalProfitAmount;
+    }
+
+    public void setTotalProfitAmount(BigDecimal totalProfitAmount) {
+        this.totalProfitAmount = totalProfitAmount;
     }
 }

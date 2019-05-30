@@ -1,45 +1,27 @@
 package com.qyj.store.service.impl;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.qyj.common.page.PageBean;
+import com.qyj.common.page.PageParam;
 import com.qyj.common.page.ResultBean;
-import com.qyj.common.utils.StringUtils;
+import com.qyj.store.common.enums.CommonEnums.ProductStatusEnum;
+import com.qyj.store.dao.QyjProductMapper;
+import com.qyj.store.dao.QyjStockProductMapper;
+import com.qyj.store.entity.QyjProductEntity;
+import com.qyj.store.entity.QyjStockProductEntity;
+import com.qyj.store.service.QyjProductService;
+import com.qyj.store.vo.QyjProductBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-
-import com.qyj.store.common.enums.CommonEnums.ProductDetailStatusEnum;
-import com.qyj.store.common.enums.CommonEnums.ProductStatusEnum;
-import com.qyj.store.common.util.FileUtils;
-import com.qyj.store.common.util.Utils;
-import com.qyj.store.dao.QyjFileInfoMapper;
-import com.qyj.store.dao.QyjProductDetailMapper;
-import com.qyj.store.dao.QyjProductMapper;
-import com.qyj.store.entity.QyjFileInfoEntity;
-import com.qyj.store.entity.QyjProductDetailEntity;
-import com.qyj.store.entity.QyjProductEntity;
-import com.qyj.store.service.QyjProductService;
-import com.qyj.store.vo.QyjFileInfoBean;
-import com.qyj.store.vo.QyjProductBean;
-import com.qyj.store.vo.QyjProductDetailBean;
-import com.qyj.store.vo.SysUserBean;
-import com.qyj.common.page.PageBean;
-import com.qyj.common.page.PageParam;
 
 import javax.xml.bind.ValidationException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 产品表服务层接口
@@ -50,8 +32,8 @@ public class QyjProductServiceImpl implements QyjProductService {
 
     private static final Logger logger = LoggerFactory.getLogger(QyjProductServiceImpl.class);
 
-    @Autowired
     private QyjProductMapper productMapper;
+    private QyjStockProductMapper stockProductMapper;
 
     /**
      * 获取产品分页数据
@@ -66,7 +48,7 @@ public class QyjProductServiceImpl implements QyjProductService {
             pageParam = new PageParam();
         }
         if (paramMap == null) {
-            paramMap = new HashMap<String, Object>();
+            paramMap = new HashMap<>();
         }
         // 统计产品数量
         int totalCount = productMapper.countProduct(paramMap);
@@ -193,5 +175,74 @@ public class QyjProductServiceImpl implements QyjProductService {
         productMapper.updateProductEdit(record);
 
         return new ResultBean("0000", "更新产品信息成功");
+    }
+
+    /**
+     * 获取产品库存明细数据
+     * @param pageParam 分页信息
+     * @param paramMap  查询参数
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public ResultBean listStoreDetail(PageParam pageParam, Map<String, Object> paramMap) {
+        if (pageParam == null) {
+            pageParam = new PageParam();
+        }
+        if (paramMap == null) {
+            paramMap = new HashMap<>();
+        }
+        // 统计产品数量
+        int totalCount = productMapper.countProduct(paramMap);
+
+        if (totalCount <= 0) {
+            Map<String, Object> countData = new HashMap<>();
+            countData.put("pageBean", new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), 0, null));
+            return new ResultBean("0000", "请求成功", countData);
+        }
+
+        pageParam.setTotalCount(totalCount);
+        // 计算分页信息
+        pageParam.splitPageInstance();
+
+        paramMap.put("pageParam", pageParam);
+
+        // 获取产品分页数据列表
+        List<QyjProductEntity> projectList = productMapper.listProduct(paramMap);
+
+        List<Long> productIdList = new ArrayList<>();
+        for (QyjProductEntity product : projectList) {
+            productIdList.add(product.getId());
+        }
+        // 获取最新进货数据
+        List<QyjStockProductEntity> stockList = stockProductMapper.listProductNewStock(productIdList);
+        Map<Long, BigDecimal> stockPriceMap = new HashMap<>();
+        for (QyjStockProductEntity stock : stockList) {
+            stockPriceMap.put(stock.getProductId(), stock.getPrice());
+        }
+
+        List<QyjProductBean> beanList = new ArrayList<>();
+        for (QyjProductEntity entity : projectList) {
+            QyjProductBean bean = new QyjProductBean();
+            BeanUtils.copyProperties(entity, bean);
+            bean.setStockPrice(stockPriceMap.get(bean.getId()));
+            beanList.add(bean);
+        }
+
+        // 获取库存统计数据，storeAmount（库存总额） hasStoreNum（库存不为0数量） noStoreNum（库存为零数量）
+        Map<String, Object> countData = productMapper.countStoreData(paramMap);
+        countData.put("pageBean", new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), totalCount, beanList));
+
+        return new ResultBean("0000", "请求成功", countData);
+    }
+
+    @Autowired
+    public void setProductMapper(QyjProductMapper productMapper) {
+        this.productMapper = productMapper;
+    }
+
+    @Autowired
+    public void setStockProductMapper(QyjStockProductMapper stockProductMapper) {
+        this.stockProductMapper = stockProductMapper;
     }
 }

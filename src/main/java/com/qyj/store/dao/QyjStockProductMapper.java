@@ -86,4 +86,11 @@ public interface QyjStockProductMapper {
 	 * @return
 	 */
 	List<Map<String, Object>> listProductStockPrice(String productIds);
+
+	/**
+	 * 获取产品最新进货数据
+	 * @param productIdList
+	 * @return
+	 */
+	List<QyjStockProductEntity> listProductNewStock(List<Long> productIdList);
 }

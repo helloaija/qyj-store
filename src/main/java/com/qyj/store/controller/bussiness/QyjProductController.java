@@ -119,4 +119,33 @@ public class QyjProductController extends BaseController {
         return productService.deleteProduct(productId, userDetails.getUserId());
     }
 
+    /**
+     * 获取库存明细数量
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/listStoreDetail", method = RequestMethod.GET)
+    public ResultBean listStoreDetail(HttpServletRequest request, HttpServletResponse response) {
+        PageParam pageParam = this.initPageParam(request);
+        String id = request.getParameter("id");
+        // 产品标题
+        String productTitle = request.getParameter("title");
+        // 产品类型
+        String productType = request.getParameter("productType");
+        // 创建开始时间
+        String createTimeBegin = request.getParameter("createTimeBegin");
+        // 创建结束时间
+        String createTimeEnd = request.getParameter("createTimeEnd");
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("id", id);
+        paramMap.put("title_like", productTitle);
+        paramMap.put("productType", productType);
+        paramMap.put("createTimeBegin", createTimeBegin);
+        paramMap.put("createTimeEnd", createTimeEnd);
+        pageParam.setOrderByCondition("create_time desc");
+        return productService.listStoreDetail(pageParam, paramMap);
+    }
+
 }

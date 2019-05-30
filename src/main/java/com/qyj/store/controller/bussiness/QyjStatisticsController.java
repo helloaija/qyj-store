@@ -1,14 +1,11 @@
 package com.qyj.store.controller.bussiness;
 
-import com.microsoft.schemas.office.visio.x2012.main.PageType;
 import com.qyj.common.page.PageParam;
 import com.qyj.common.page.ResultBean;
 import com.qyj.common.utils.StringUtils;
 import com.qyj.store.controller.BaseController;
 import com.qyj.store.entity.QyjSellProductEntity;
 import com.qyj.store.service.QyjStatisticsService;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -24,9 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -42,7 +36,6 @@ import java.util.Map;
 @RequestMapping("admin/statistics")
 public class QyjStatisticsController extends BaseController {
 
-    @Autowired
     private QyjStatisticsService qyjStatisticsService;
 
     /**
@@ -232,4 +225,8 @@ public class QyjStatisticsController extends BaseController {
         }
     }
 
+    @Autowired
+    public void setQyjStatisticsService(QyjStatisticsService qyjStatisticsService) {
+        this.qyjStatisticsService = qyjStatisticsService;
+    }
 }

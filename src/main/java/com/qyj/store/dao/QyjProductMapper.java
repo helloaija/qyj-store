@@ -85,4 +85,11 @@ public interface QyjProductMapper {
 	 * @return
 	 */
 	int deleteProduct(@Param("productId") Long productId, @Param("userId") Long userId);
+
+	/**
+	 * 获取库存统计数据
+	 * @param paramMap
+	 * @return
+	 */
+	Map<String, Object> countStoreData(Map<String, Object> paramMap);
 }

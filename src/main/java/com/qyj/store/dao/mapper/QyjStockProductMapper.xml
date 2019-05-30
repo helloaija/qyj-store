@@ -119,4 +119,14 @@
 		select product_id productId, group_concat(distinct(price) SEPARATOR ';') prices from qyj_stock_product where product_id in (${_parameter}) group by product_id;
 	</select>
 
+	<!--获取产品最新进货数据-->
+	<select id="listProductNewStock" parameterType="java.util.List" resultMap="baseResultMap">
+		select sp1.product_id product_id, sp1.price  from qyj_stock_product sp1
+		left join qyj_stock_product sp2  on sp1.product_id = sp2.product_id and sp1.id <![CDATA[ < ]]> sp2.id
+		where sp2.id is null and sp1.product_id in
+		<foreach collection="list" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</select>
+
 </mapper>

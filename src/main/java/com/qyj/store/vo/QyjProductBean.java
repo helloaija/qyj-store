@@ -58,6 +58,9 @@ public class QyjProductBean implements Serializable {
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date updateTime;
+
+	/** 售价 */
+	private BigDecimal stockPrice;
 	
 	public Long getId() {
 		return id;
@@ -169,6 +172,18 @@ public class QyjProductBean implements Serializable {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public static long getSerialVersionUID() {
+		return serialVersionUID;
+	}
+
+	public BigDecimal getStockPrice() {
+		return stockPrice;
+	}
+
+	public void setStockPrice(BigDecimal stockPrice) {
+		this.stockPrice = stockPrice;
 	}
 
 	@Override

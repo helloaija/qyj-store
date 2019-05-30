@@ -64,4 +64,13 @@ public interface QyjProductService {
      * @return
      */
     ResultBean updateProduct(QyjProductEntity record);
+
+    /**
+     * 获取产品库存数据
+     * @param pageParam 分页信息
+     * @param paramMap  查询参数
+     * @return
+     * @throws Exception
+     */
+    ResultBean listStoreDetail(PageParam pageParam, Map<String, Object> paramMap);
 }

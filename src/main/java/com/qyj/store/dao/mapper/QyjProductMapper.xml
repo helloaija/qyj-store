@@ -168,4 +168,36 @@
 		update qyj_product set is_del = 1, del_user = #{userId}, del_time = now()
 		where id = #{productId}
 	</update>
+
+	<!--获取库存统计数据-->
+	<select id="countStoreData" parameterType="java.util.Map" resultType="java.util.Map">
+		select sum(sp.price * p.number) storeAmount, count(p.number > 0 or null) hasStoreNum, count(p.number = 0 or null) noStoreNum
+		from qyj_product p left join (
+			select sp1.product_id pid, sp1.price from qyj_stock_product sp1
+			left join qyj_stock_product sp2 on sp1.product_id = sp2.product_id and sp1.id <![CDATA[<]]> sp2.id
+			where sp2.id is null) sp on p.id = sp.pid
+		where p.is_del = 0
+			<if test="id != null and id != ''">
+				and p.id = #{id}
+			</if>
+			<if test="title != null and title != ''">
+				and p.title = #{title}
+			</if>
+			<if test="productType != null and productType != ''">
+				and p.product_type = #{productType}
+			</if>
+			<if test="productStatus != null and productStatus != ''">
+				and p.product_status = #{productStatus}
+			</if>
+			<if test="createTimeBegin != null">
+				<![CDATA[and p.create_time >= #{createTimeBegin}]]>
+			</if>
+			<if test="createTimeEnd != null">
+				<![CDATA[and p.create_time < DATE_FORMAT(date_add(#{createTimeEnd,jdbcType=TIMESTAMP}, interval 1 day), '%Y-%c-%d')]]>
+			</if>
+			<!-- Like query -->
+			<if test="title_like != null and title_like != ''">
+				and p.title like CONCAT('%', #{title_like}, '%')
+			</if>
+	</select>
 </mapper>

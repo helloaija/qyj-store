@@ -91,8 +91,7 @@
 	<!--获取销售产品按月统计数量-->
 	<select id="countSellProductMonth" parameterType="java.util.Map" resultType="java.util.Map">
 		select count(t.product_id) totalCount, sum(t.totalPrice) totalSellPrice, sum(t.stockPrice) totalStockPrice from (
-			select sp.product_id, sum(sp.price * sp.number) totalPrice,
-				(select sum(sp.number) * sum(price * number) / sum(number) from qyj_stock_product where product_id = sp.product_id) as stockPrice
+			select sp.product_id, sum(sp.price * sp.number) totalPrice, sum(sp.stock_price * sp.number) as stockPrice
 			from qyj_sell_product sp join qyj_product p join qyj_sell_order o on sp.product_id = p.id and sp.sell_id = o.id
 			where 1=1 and sp.price > 0
 			<if test="year != null and year != ''">
@@ -112,7 +111,8 @@
 	<select id="listSellProductMonth" parameterType="java.util.Map" resultType="com.qyj.store.model.QyjProductMonthCountModel">
 		select p.id productId, p.title productTitle, p.product_unit productUnit, sum(sp.number) totalNumber, sum(sp.price * sp.number) totalPrice,
 			min(sp.price) minPrice, max(sp.price) maxPrice, count(distinct(o.user_id)) userNumber, count(o.id) orderNumber,
-			(select sum(price * number) / sum(number) from qyj_stock_product where product_id = sp.product_id) as avgStockPrice
+			(select sum(price * number) / sum(number) from qyj_stock_product where product_id = sp.product_id) as avgStockPrice,
+			sum((sp.price - sp.stock_price) * sp.number) totalProfitAmount
 		from qyj_sell_product sp join qyj_product p join qyj_sell_order o on sp.product_id = p.id and sp.sell_id = o.id
 		where 1=1 and sp.price > 0
 		<if test="year != null and year != ''">
