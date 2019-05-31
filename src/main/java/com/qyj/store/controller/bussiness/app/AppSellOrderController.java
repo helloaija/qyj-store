@@ -67,7 +67,7 @@ public class AppSellOrderController extends BaseController {
         paramMap.put("orderTimeBegin", orderTimeBegin);
         paramMap.put("orderTimeEnd", orderTimeEnd);
         pageParam.setOrderByCondition("create_time desc");
-        return sellOrderService.listSellOrderAndProductPage(pageParam, paramMap);
+        return sellOrderService.listSellOrder(pageParam, paramMap);
     }
 
     /**

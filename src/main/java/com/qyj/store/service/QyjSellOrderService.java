@@ -23,6 +23,15 @@ public interface QyjSellOrderService {
 	ResultBean listSellOrderAndProductPage(PageParam pageParam, Map<String, Object> paramMap);
 
 	/**
+	 * 获取订单分页数据 app调用
+	 * @param pageParam 分页信息
+	 * @param paramMap  查询参数
+	 * @return
+	 * @throws Exception
+	 */
+	ResultBean listSellOrder(PageParam pageParam, Map<String, Object> paramMap);
+
+	/**
 	 * 添加销售订单
 	 * @param sellOrder
 	 * @return

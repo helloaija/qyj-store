@@ -65,7 +65,7 @@ public class QyjSellOrderEntity implements Serializable {
     private String mobilePhone;
 
     /** 订单商品列表 */
-    List<QyjSellProductEntity> sellProductList = null;
+    private List<QyjSellProductEntity> sellProductList = null;
 
     public Long getId() {
         return id;

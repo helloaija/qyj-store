@@ -13,18 +13,18 @@ import com.qyj.store.dao.QyjSellProductMapper;
 import com.qyj.store.entity.QyjProductEntity;
 import com.qyj.store.entity.QyjSellOrderEntity;
 import com.qyj.store.entity.QyjSellProductEntity;
-import com.qyj.store.entity.QyjStockProductEntity;
 import com.qyj.store.model.QyjUserOrderSumModel;
 import com.qyj.store.service.QyjProductService;
 import com.qyj.store.service.QyjSellOrderService;
+import com.qyj.store.vo.app.SellOrderBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.transform.Result;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -94,6 +94,63 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
 
         countMap.put("pageBean", new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), totalCount, projectList));
         return resultBean.init("0000", "请求成功", countMap);
+    }
+
+    /**
+     * 获取订单分页数据 app调用
+     * @param pageParam 分页信息
+     * @param paramMap  查询参数
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public ResultBean listSellOrder(PageParam pageParam, Map<String, Object> paramMap) {
+        ResultBean resultBean = new ResultBean();
+
+        if (pageParam == null) {
+            pageParam = new PageParam();
+        }
+        if (paramMap == null) {
+            paramMap = new HashMap<>();
+        }
+
+        paramMap.put("pageParam", pageParam);
+        // 订单统计信息
+        Map<String, Object> countMap = sellOrderMapper.countSellOrder(paramMap);
+        logger.info("listOrderPage paramMap:{}, countMap:{}", paramMap, countMap);
+
+        int totalCount = Integer.parseInt(String.valueOf(countMap.get("totalCount")));
+        pageParam.setTotalCount(totalCount);
+        // 计算分页信息
+        pageParam.splitPageInstance();
+
+        if (totalCount <= 0) {
+            return resultBean.init("0000", "请求成功",
+                    new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), totalCount, new ArrayList<>()));
+        }
+
+        // 获取分页数据列表
+        List<QyjSellOrderEntity> entityList = sellOrderMapper.listSellOrderAndProduct(paramMap);
+        List<SellOrderBean> beanList = new ArrayList<>();
+        for (QyjSellOrderEntity entity : entityList) {
+            SellOrderBean bean = new SellOrderBean();
+            BeanUtils.copyProperties(entity, bean);
+            List<QyjSellProductEntity> productList = entity.getSellProductList();
+            BigDecimal totalProfitAmount = new BigDecimal("0");
+            if (productList != null && !productList.isEmpty()) {
+                for (QyjSellProductEntity productEntity : productList) {
+                    if (productEntity.getStockPrice() != null) {
+                        totalProfitAmount = totalProfitAmount.add(new BigDecimal(productEntity.getNumber())
+                                .multiply(productEntity.getPrice().subtract(productEntity.getStockPrice())));
+                    }
+                }
+            }
+            bean.setProfitAmount(totalProfitAmount);
+            beanList.add(bean);
+        }
+
+        return resultBean.init("0000", "请求成功",
+                new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), totalCount, beanList));
     }
 
     /**
@@ -326,7 +383,7 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
         Set<Long> idSet = new HashSet<Long>();
 
         Iterator<QyjSellProductEntity> it = sellProductEntityList.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             QyjSellProductEntity sellProductEntity = it.next();
             if (sellProductEntity.getProductId() == null) {
                 it.remove();
@@ -374,8 +431,8 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
 
         if (sellOrder.getPayTime() == null &&
                 !CommonEnums.OrderStatusEnum.UNPAY.toString().equals(sellOrder.getOrderStatus())) {
-                resultBean.init("0002", "支付时间不能为空");
-                return false;
+            resultBean.init("0002", "支付时间不能为空");
+            return false;
         }
 
         return true;
@@ -419,7 +476,7 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
     /**
      * 获取用户订单统计
      * @param pageParam 分页信息
-     * @param paramMap 查询参数
+     * @param paramMap  查询参数
      * @return
      * @throws Exception
      */
