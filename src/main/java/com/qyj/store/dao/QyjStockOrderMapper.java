@@ -1,7 +1,7 @@
 package com.qyj.store.dao;
 
-import com.qyj.store.entity.QyjOrderEntity;
 import com.qyj.store.entity.QyjStockOrderEntity;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +11,7 @@ import java.util.Map;
  * @author CTF_stone
  *
  */
+@Repository
 public interface QyjStockOrderMapper {
 
     /**

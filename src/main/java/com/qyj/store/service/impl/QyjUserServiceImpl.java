@@ -105,8 +105,9 @@ public class QyjUserServiceImpl implements QyjUserService {
         }
 
         logger.info("insertUserInfo userEntity, {}", record);
+        qyjUserMapper.insert(record);
 
-        return resultBean.init("0000", "新增买家成功", qyjUserMapper.insert(record));
+        return resultBean.init("0000", "新增买家成功", record);
     }
 
     /**

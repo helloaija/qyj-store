@@ -94,15 +94,13 @@ public class AppSellOrderController extends BaseController {
     }
 
     /**
-     * 根据主键查询销售已经其商品
+     * 根据主键查询销售及其商品
      * @param sellId
-     * @param request
-     * @param response
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "/getSellOrderInfo", method = RequestMethod.GET)
-    public ResultBean getSellOrderInfo(Long sellId, HttpServletRequest request, HttpServletResponse response) {
+    public ResultBean getSellOrderInfo(Long sellId) {
         return sellOrderService.loadSellOrderAndProductBySellId(sellId);
     }
 

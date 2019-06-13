@@ -150,7 +150,7 @@ public class QyjProductServiceImpl implements QyjProductService {
         logger.info("saveProductInfo insert productEntity, info={}, result={}", record.toString());
 
         if (productMapper.insert(record) == 1) {
-            return new ResultBean("0000", "新增产品信息成功");
+            return new ResultBean("0000", "新增产品信息成功", record);
         }
 
         return new ResultBean("0002", "新增产品信息失败");
@@ -174,7 +174,7 @@ public class QyjProductServiceImpl implements QyjProductService {
 
         productMapper.updateProductEdit(record);
 
-        return new ResultBean("0000", "更新产品信息成功");
+        return new ResultBean("0000", "更新产品信息成功", record);
     }
 
     /**
