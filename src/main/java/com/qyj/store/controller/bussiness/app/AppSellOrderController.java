@@ -90,7 +90,11 @@ public class AppSellOrderController extends BaseController {
         sellOrder.setCreateUser(userDetails.getUserId());
         sellOrder.setUpdateUser(userDetails.getUserId());
 
-        return sellOrderService.addSellOrder(sellOrder);
+        ResultBean resultBean = sellOrderService.addSellOrder(sellOrder);
+
+        resultBean.setResult(sellOrderService.getSellOrderAndProductBySellId((Long) resultBean.getResult()));
+
+        return resultBean;
     }
 
     /**
@@ -123,7 +127,11 @@ public class AppSellOrderController extends BaseController {
 
         sellOrder.setUpdateUser(userDetails.getUserId());
 
-        return sellOrderService.editSellOrder(sellOrder);
+        ResultBean resultBean = sellOrderService.editSellOrder(sellOrder);
+
+        resultBean.setResult(sellOrderService.getSellOrderAndProductBySellId((Long) resultBean.getResult()));
+
+        return resultBean;
     }
 
     /**

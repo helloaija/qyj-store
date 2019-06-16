@@ -210,7 +210,7 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
             }
         }
 
-        return resultBean.init("0000", "添加销售单成功");
+        return resultBean.init("0000", "添加销售单成功", sellOrder.getId());
     }
 
     /**
@@ -308,7 +308,7 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
             }
         }
 
-        return resultBean.init("0000", "更新销售单成功");
+        return resultBean.init("0000", "更新销售单成功", sellOrder.getId());
     }
 
     /**
@@ -509,6 +509,17 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
         return resultBean.init("0000", "success",
                 new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), totalCount, projectList));
     }
+
+    /**
+     * 获取销售单及其产品
+     * @param sellId
+     * @return
+     */
+    @Override
+    public QyjSellOrderEntity getSellOrderAndProductBySellId(Long sellId) {
+        return sellOrderMapper.getSellOrderAndProductBySellId(sellId);
+    }
+
 
     @Autowired
     public void setSellOrderMapper(QyjSellOrderMapper sellOrderMapper) {

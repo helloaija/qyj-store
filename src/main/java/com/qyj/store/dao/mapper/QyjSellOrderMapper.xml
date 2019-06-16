@@ -50,7 +50,7 @@
         update qyj_sell_order
         <set>
             <trim suffix="" suffixOverrides=",">
-                <if test="orderNumber != null">
+                <if test="orderNumber != null and orderNumber != ''">
                     order_number = #{orderNumber,jdbcType=VARCHAR},
                 </if>
                 <if test="orderAmount != null">

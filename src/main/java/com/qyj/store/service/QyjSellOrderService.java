@@ -70,4 +70,11 @@ public interface QyjSellOrderService {
 	 * @throws Exception
 	 */
 	ResultBean listUserOrderSumPage(PageParam pageParam, Map<String, Object> paramMap);
+
+	/**
+	 * 获取销售单及其产品
+	 * @param sellId
+	 * @return
+	 */
+	QyjSellOrderEntity getSellOrderAndProductBySellId(Long sellId);
 }
