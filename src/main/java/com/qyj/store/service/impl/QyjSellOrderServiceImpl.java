@@ -389,7 +389,7 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
                 it.remove();
                 continue;
             }
-            orderAmount = orderAmount.add(sellProductEntity.getPrice().multiply(BigDecimal.valueOf(sellProductEntity.getNumber())));
+
             if (sellProductEntity.getProductId() == null || StringUtils.isEmpty(sellProductEntity.getProductTitle())) {
                 resultBean.init("0002", "产品信息不能为空");
                 return false;
@@ -406,6 +406,7 @@ public class QyjSellOrderServiceImpl implements QyjSellOrderService {
                 resultBean.init("0002", "产品信息存在重复[" + sellProductEntity.getProductTitle() + "]");
                 return false;
             }
+            orderAmount = orderAmount.add(sellProductEntity.getPrice().multiply(BigDecimal.valueOf(sellProductEntity.getNumber())));
             idSet.add(sellProductEntity.getProductId());
         }
 

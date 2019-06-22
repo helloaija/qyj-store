@@ -27,12 +27,29 @@ public interface QyjStockOrderService {
 	ResultBean listStockOrderAndProductPage(PageParam pageParam, Map<String, Object> paramMap);
 
 	/**
+	 * 获取订单分页数据 app调用
+	 * @param pageParam 分页信息
+	 * @param paramMap  查询参数
+	 * @return
+	 * @throws Exception
+	 */
+	ResultBean listStockOrder(PageParam pageParam, Map<String, Object> paramMap);
+
+	/**
 	 * 添加进货订单
 	 * @param stockOrder
 	 * @return
 	 * @throws Exception
 	 */
 	ResultBean addStockOrder(QyjStockOrderEntity stockOrder) throws Exception;
+
+	/**
+	 * 添加进货订单-app接口
+	 * @param stockOrder
+	 * @return
+	 * @throws Exception
+	 */
+	public ResultBean addStockOrderAndReturn(QyjStockOrderEntity stockOrder) throws Exception;
 
 	/**
 	 * 获取进货单数据
@@ -48,6 +65,14 @@ public interface QyjStockOrderService {
 	 * @throws Exception
 	 */
 	ResultBean editStockOrder(QyjStockOrderEntity stockOrder) throws Exception;
+
+	/**
+	 * 更新进货订单-app
+	 * @param stockOrder
+	 * @return
+	 * @throws Exception
+	 */
+	ResultBean editStockOrderAndReturn(QyjStockOrderEntity stockOrder);
 
 	/**
 	 * 根据stockId删除进货单

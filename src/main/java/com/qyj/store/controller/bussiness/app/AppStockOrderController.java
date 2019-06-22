@@ -57,7 +57,7 @@ public class AppStockOrderController extends BaseController {
         paramMap.put("createTimeBegin", createTimeBegin);
         paramMap.put("createTimeEnd", createTimeEnd);
         pageParam.setOrderByCondition("create_time desc");
-        return stockOrderService.listStockOrderAndProductPage(pageParam, paramMap);
+        return stockOrderService.listStockOrder(pageParam, paramMap);
     }
 
     /**
@@ -80,7 +80,7 @@ public class AppStockOrderController extends BaseController {
         stockOrder.setCreateUser(userDetails.getUserId());
         stockOrder.setUpdateUser(userDetails.getUserId());
 
-        return stockOrderService.addStockOrder(stockOrder);
+        return stockOrderService.addStockOrderAndReturn(stockOrder);
     }
 
     /**
@@ -115,7 +115,7 @@ public class AppStockOrderController extends BaseController {
 
         stockOrder.setUpdateUser(userDetails.getUserId());
 
-        return stockOrderService.editStockOrder(stockOrder);
+        return stockOrderService.editStockOrderAndReturn(stockOrder);
     }
 
     /**

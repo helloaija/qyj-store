@@ -12,13 +12,13 @@ import com.qyj.store.common.util.Utils;
 import com.qyj.store.dao.QyjProductMapper;
 import com.qyj.store.dao.QyjStockOrderMapper;
 import com.qyj.store.dao.QyjStockProductMapper;
-import com.qyj.store.entity.QyjProductEntity;
-import com.qyj.store.entity.QyjStockOrderEntity;
-import com.qyj.store.entity.QyjStockProductEntity;
+import com.qyj.store.entity.*;
 import com.qyj.store.service.QyjProductService;
 import com.qyj.store.service.QyjStockOrderService;
+import com.qyj.store.vo.app.SellOrderBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -63,7 +63,7 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
             pageParam = new PageParam();
         }
         if (paramMap == null) {
-            paramMap = new HashMap<String, Object>();
+            paramMap = new HashMap<>();
         }
         // 统计订单信息
         Map<String, Object> countMap = stockOrderMapper.countStockOrder(paramMap);
@@ -90,6 +90,46 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
 
         countMap.put("pageBean", new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), totalCount, projectList));
         return resultBean.init("0000", "请求成功", countMap);
+    }
+
+    /**
+     * 获取订单分页数据 app调用
+     * @param pageParam 分页信息
+     * @param paramMap  查询参数
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public ResultBean listStockOrder(PageParam pageParam, Map<String, Object> paramMap) {
+        ResultBean resultBean = new ResultBean();
+
+        if (pageParam == null) {
+            pageParam = new PageParam();
+        }
+        if (paramMap == null) {
+            paramMap = new HashMap<>();
+        }
+
+        paramMap.put("pageParam", pageParam);
+        // 订单统计信息
+        Map<String, Object> countMap = stockOrderMapper.countStockOrder(paramMap);
+        logger.info("listStockOrder paramMap:{}, countMap:{}", paramMap, countMap);
+
+        int totalCount = Integer.parseInt(String.valueOf(countMap.get("totalCount")));
+        pageParam.setTotalCount(totalCount);
+        // 计算分页信息
+        pageParam.splitPageInstance();
+
+        if (totalCount <= 0) {
+            return resultBean.init("0000", "请求成功",
+                    new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), totalCount, new ArrayList<>()));
+        }
+
+        // 获取分页数据列表
+        List<QyjStockOrderEntity> entityList = stockOrderMapper.listStockOrderAndProduct(paramMap);
+
+        return resultBean.init("0000", "请求成功",
+                new PageBean(pageParam.getCurrentPage(), pageParam.getPageSize(), totalCount, entityList));
     }
 
     /**
@@ -145,6 +185,63 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
         productMapper.updateProductNumberBatch(productEntityList);
 
         return resultBean.init("0000", "添加进货单成功");
+    }
+
+    /**
+     * 添加进货订单-app接口
+     * @param stockOrder
+     * @return
+     * @throws Exception
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false, rollbackFor = Exception.class)
+    public ResultBean addStockOrderAndReturn(QyjStockOrderEntity stockOrder) throws Exception {
+        ResultBean resultBean = new ResultBean();
+
+        // 校验
+        if (!this.viladStockOrderAndSetValue(stockOrder, resultBean)) {
+            return resultBean;
+        }
+
+        stockOrder.setOrderNumber(Utils.getCurrentUid(5));
+        stockOrder.setCreateTime(new Date());
+        stockOrder.setUpdateTime(new Date());
+
+        // 插入订单
+        int insertNum = stockOrderMapper.insertStockOrder(stockOrder);
+        if (insertNum != 1) {
+            return resultBean.init("0002", "添加进货单失败");
+        }
+
+        // 获取订单的产品数量，用来更新产品储量
+        List<QyjProductEntity> productEntityList = new ArrayList<>();
+
+        List<QyjStockProductEntity> stockProductEntityList = stockOrder.getStockProductList();
+        for (QyjStockProductEntity stockProductEntity : stockProductEntityList) {
+            // 设置产品关联订单
+            stockProductEntity.setStockId(stockOrder.getId());
+            stockProductEntity.setCreateTime(new Date());
+
+            QyjProductEntity productEntity = new QyjProductEntity();
+            productEntity.setId(stockProductEntity.getProductId());
+            productEntity.setNumber(stockProductEntity.getNumber());
+            productEntity.setSoldNumber(0);
+            productEntity.setUnpayNumber(0);
+            productEntityList.add(productEntity);
+        }
+
+        // 插入订单产品
+        insertNum = stockProductMapper.insertStockProductList(stockOrder.getStockProductList());
+        if (insertNum < 1) {
+            throw new ValidException("添加进货单产品失败");
+        }
+
+        // 更新库存数量
+        productMapper.updateProductNumberBatch(productEntityList);
+
+        QyjStockOrderEntity stockOrderEntity = stockOrderMapper.getStockOrderAndProductByStockId(stockOrder.getId());
+
+        return resultBean.init("0000", "添加进货单成功", stockOrderEntity);
     }
 
     /**
@@ -238,6 +335,84 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
         productMapper.updateProductNumberBatch(productEntityList);
 
         return resultBean.init("0000", "更新进货单成功");
+    }
+
+    /**
+     * 添加进货订单-app接口
+     * @param stockOrder
+     * @return
+     * @throws Exception
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false, rollbackFor = Exception.class)
+    public ResultBean editStockOrderAndReturn(QyjStockOrderEntity stockOrder) {
+        ResultBean resultBean = new ResultBean();
+        // 校验
+        if (!this.viladStockOrderAndSetValue(stockOrder, resultBean)) {
+            return resultBean;
+        }
+
+        stockOrder.setUpdateTime(new Date());
+
+        // 更新订单
+        stockOrderMapper.updateStockOrder(stockOrder);
+
+        // 获取之前的进货单产品
+        List<QyjStockProductEntity> oldStockProductList = stockProductMapper.listStockProductByStockId(stockOrder.getId());
+
+        List<QyjStockProductEntity> addList = new ArrayList<>();
+        List<QyjStockProductEntity> updateList = new ArrayList<>();
+        List<Long> deleteList = new ArrayList<>();
+
+        // 获取订单的产品数量，用来更新产品储量
+        List<QyjProductEntity> productEntityList = new ArrayList<>();
+
+        Set<Long> stockProductIdSet = new HashSet<>();
+        List<QyjStockProductEntity> stockProductEntityList = stockOrder.getStockProductList();
+        // 对页面上编辑的产品分类，没有id的就是新增，有id就是编辑
+        for (QyjStockProductEntity stockProductEntity : stockProductEntityList) {
+            stockProductIdSet.add(stockProductEntity.getId());
+            if (stockProductEntity.getId() == null) {
+                stockProductEntity.setStockId(stockOrder.getId());
+                stockProductEntity.setCreateTime(new Date());
+                addList.add(stockProductEntity);
+            } else {
+                updateList.add(stockProductEntity);
+            }
+
+            // 新增的和更新的库存都加，旧的都减
+            QyjProductEntity productEntity = productService.getUpdateNumberProductEntity(stockProductEntity.getProductId(),
+                    stockProductEntity.getNumber(), 0, 0);
+            productEntityList.add(productEntity);
+        }
+
+        for (QyjStockProductEntity stockProductEntity : oldStockProductList) {
+            if (!stockProductIdSet.contains(stockProductEntity.getId())) {
+                deleteList.add(stockProductEntity.getId());
+            }
+
+            // 旧的不管是更新的还是删除的都库存减，因为上面的新增和更新都库存加
+            QyjProductEntity productEntity = productService.getUpdateNumberProductEntity(
+                    stockProductEntity.getProductId(), -1 * stockProductEntity.getNumber(), 0, 0);
+            productEntityList.add(productEntity);
+        }
+
+        if (!addList.isEmpty()) {
+            stockProductMapper.insertStockProductList(addList);
+        }
+        if (!updateList.isEmpty()) {
+            stockProductMapper.updateStockProductList(updateList);
+        }
+        if (!deleteList.isEmpty()) {
+            stockProductMapper.deleteStockProductList(deleteList);
+        }
+
+        // 更新库存数量
+        productMapper.updateProductNumberBatch(productEntityList);
+
+        QyjStockOrderEntity stockOrderEntity = stockOrderMapper.getStockOrderAndProductByStockId(stockOrder.getId());
+
+        return resultBean.init("0000", "更新进货单成功", stockOrderEntity);
     }
 
     /**
