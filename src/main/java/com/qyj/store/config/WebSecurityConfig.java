@@ -70,7 +70,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             String jwtToken = JwtTokenUtils.generateToken(userDetails.getUsername());
             // 设置当前登录的token
             userDetails.setJwtToken(jwtToken);
-            CommonConstant.USER_LOGIN_MAP.put(userDetails.getUsername(), userDetails, CommonConstant.LOGOUT_TIME, TimeUnit.SECONDS);
+            String clientType = request.getParameter("clientType");
+            if (CommonConstant.CLIENT_TYPE_APP.equals(clientType)) {
+                // app登录有限期15天
+                CommonConstant.USER_LOGIN_MAP_APP.put(userDetails.getUsername(), userDetails, CommonConstant.LOGOUT_TIME_APP, TimeUnit.SECONDS);
+            } else {
+                // 网页登录有效期30分钟
+                CommonConstant.USER_LOGIN_MAP.put(userDetails.getUsername(), userDetails, CommonConstant.LOGOUT_TIME, TimeUnit.SECONDS);
+            }
             ResultBean resultBean = new ResultBean("0000", "登录成功", jwtToken);
             response.getWriter().write(JSON.toJSONString(resultBean));
         }).failureHandler((request, response, authentication) -> {

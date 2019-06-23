@@ -22,20 +22,29 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String authHeader = request.getHeader("Authorization");
+        String clientType = request.getHeader("clientType");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             final String authToken = authHeader.substring("Bearer ".length());
             String username = JwtTokenUtils.parseToken(authToken);
 
-            if (username != null && CommonConstant.USER_LOGIN_MAP.containsKey(username)) {
-                QyjUserDetails userDetails = CommonConstant.USER_LOGIN_MAP.get(username);
+            if (username != null) {
+                QyjUserDetails userDetails = null;
+                if (CommonConstant.CLIENT_TYPE_APP.equals(clientType) && CommonConstant.USER_LOGIN_MAP_APP.containsKey(username)) {
+                    userDetails = CommonConstant.USER_LOGIN_MAP_APP.get(username);
+                } else if (CommonConstant.USER_LOGIN_MAP.containsKey(username)) {
+                    userDetails = CommonConstant.USER_LOGIN_MAP.get(username);
+                }
 
                 // 如果登录用户不为空且登录的token和获取的token一致
                 if (userDetails != null && authToken.equals(userDetails.getJwtToken())) {
-                    QyjUserDetails qyjUserDetails = new QyjUserDetails();
-                    BeanUtils.copyProperties(userDetails, qyjUserDetails);
-                    // 重新设置登录过期时间，之所以copy一个新的对象，是因为之key、value一致无效
-                    CommonConstant.USER_LOGIN_MAP.put(username, qyjUserDetails, CommonConstant.LOGOUT_TIME, TimeUnit.SECONDS);
+                    if (!CommonConstant.CLIENT_TYPE_APP.equals(clientType)) {
+                        QyjUserDetails qyjUserDetails = new QyjUserDetails();
+                        BeanUtils.copyProperties(userDetails, qyjUserDetails);
+                        // 重新设置登录过期时间，之所以copy一个新的对象，是因为之key、value一致无效
+                        CommonConstant.USER_LOGIN_MAP.put(username, qyjUserDetails, CommonConstant.LOGOUT_TIME, TimeUnit.SECONDS);
+                    }
+
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
