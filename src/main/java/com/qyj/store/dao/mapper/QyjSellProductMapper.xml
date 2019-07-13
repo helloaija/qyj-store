@@ -180,4 +180,14 @@
 			${pageParam.limit}
 		</if>
 	</select>
+
+	<!--获取用户最后一次购买产品的价格-->
+	<select id="listLastSellPrice" parameterType="java.util.Map" resultMap="baseResultMap">
+		select  t1.product_id, t1.price from
+			(select p.product_id, o.order_time, p.price, o.user_id from qyj_sell_product p, qyj_sell_order o
+					where p.sell_id = o.id and o.user_id = ${userId} and p.product_id in (${productIds})) t1
+			left join (select p.product_id, o.order_time from qyj_sell_product p, qyj_sell_order o
+					where p.sell_id = o.id and o.user_id = ${userId} and p.product_id in (${productIds})) t2
+		on t1.product_id = t2.product_id and t1.order_time <![CDATA[<]]> t2.order_time where t2.product_id is null;
+	</select>
 </mapper>

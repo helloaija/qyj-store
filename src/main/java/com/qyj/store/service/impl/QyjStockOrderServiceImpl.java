@@ -10,6 +10,7 @@ import com.qyj.common.utils.StringUtils;
 import com.qyj.store.common.enums.CommonEnums;
 import com.qyj.store.common.util.Utils;
 import com.qyj.store.dao.QyjProductMapper;
+import com.qyj.store.dao.QyjSellProductMapper;
 import com.qyj.store.dao.QyjStockOrderMapper;
 import com.qyj.store.dao.QyjStockProductMapper;
 import com.qyj.store.entity.*;
@@ -47,6 +48,7 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
     private QyjStockProductMapper stockProductMapper;
     private QyjProductMapper productMapper;
     private QyjProductService productService;
+    private QyjSellProductMapper sellProductMapper;
 
     /**
      * 获取订单分页数据
@@ -564,27 +566,45 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
             }
 
             // 获取产品进货价， 并把进货价加入到产品信息中
+            Map<Long, String> stockPricesMap = new HashMap<>();
             List<Map<String, Object>> pricesMapList = stockProductMapper.listProductStockPrice(productIdSb.toString());
             if (pricesMapList != null && !pricesMapList.isEmpty()) {
-                Map<Long, String> pricesMap = new HashMap<>();
                 for (Map<String, Object> map : pricesMapList) {
-                    pricesMap.put(Long.parseLong(String.valueOf(map.get("productId"))), String.valueOf(map.get("prices")));
+                    stockPricesMap.put(Long.parseLong(String.valueOf(map.get("productId"))), String.valueOf(map.get("prices")));
                 }
-
-                List<JSONObject> recordJsonList = new ArrayList<>();
-                for (QyjProductEntity entity: recordList) {
-                    JSONObject json = (JSONObject) JSON.toJSON(entity);
-                    String prices = pricesMap.get(entity.getId());
-                    if (StringUtils.isEmpty(prices)) {
-                        json.put("stockPrices", new String[]{});
-                    } else {
-                        json.put("stockPrices", prices.split(";"));
-                    }
-                    recordJsonList.add(json);
-                }
-
-                pageBean.setRecordList(recordJsonList);
             }
+
+            Map<Long, BigDecimal> sellPricesMap = new HashMap<>();
+            if (paramMap.get("userId") != null) {
+                Long userId = (Long) paramMap.get("userId");
+                Map<String, Object> sellParamMap = new HashMap<>();
+                sellParamMap.put("userId", userId);
+                sellParamMap.put("productIds", productIdSb.toString());
+                // 获取用户对应产品最后购买价格
+                List<QyjSellProductEntity> sellProductList = sellProductMapper.listLastSellPrice(sellParamMap);
+                for (QyjSellProductEntity entity : sellProductList) {
+                    sellPricesMap.put(entity.getProductId(), entity.getPrice());
+                }
+            }
+
+            List<JSONObject> recordJsonList = new ArrayList<>();
+            for (QyjProductEntity entity: recordList) {
+                if (sellPricesMap.containsKey(entity.getId())) {
+                    entity.setPrice(sellPricesMap.get(entity.getId()));
+                }
+                JSONObject json = (JSONObject) JSON.toJSON(entity);
+                String prices = stockPricesMap.get(entity.getId());
+                if (StringUtils.isEmpty(prices)) {
+                    json.put("stockPrices", new String[]{});
+                } else {
+                    json.put("stockPrices", prices.split(";"));
+                }
+                recordJsonList.add(json);
+            }
+
+            pageBean.setRecordList(recordJsonList);
+
+
         }
         return new ResultBean("0000", "请求成功", pageBean);
     }
@@ -607,5 +627,10 @@ public class QyjStockOrderServiceImpl implements QyjStockOrderService {
     @Autowired
     public void setProductService(QyjProductService productService) {
         this.productService = productService;
+    }
+
+    @Autowired
+    public void setSellProductMapper(QyjSellProductMapper sellProductMapper) {
+        this.sellProductMapper = sellProductMapper;
     }
 }

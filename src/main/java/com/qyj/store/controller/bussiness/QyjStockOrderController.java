@@ -2,6 +2,8 @@ package com.qyj.store.controller.bussiness;
 
 import com.qyj.common.page.PageParam;
 import com.qyj.common.page.ResultBean;
+import com.qyj.common.utils.NumberUtils;
+import com.qyj.common.utils.StringUtils;
 import com.qyj.store.config.QyjUserDetails;
 import com.qyj.store.controller.BaseController;
 import com.qyj.store.entity.QyjStockOrderEntity;
@@ -157,12 +159,17 @@ public class QyjStockOrderController extends BaseController {
         String createTimeBegin = request.getParameter("createTimeBegin");
         // 创建结束时间
         String createTimeEnd = request.getParameter("createTimeEnd");
-        Map<String, Object> paramMap = new HashMap<String, Object>();
+        // 销售给的用户
+        String userId = request.getParameter("userId");
+        Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("id", id);
         paramMap.put("title_like", productTitle);
         paramMap.put("productType", productType);
         paramMap.put("createTimeBegin", createTimeBegin);
         paramMap.put("createTimeEnd", createTimeEnd);
+        if (NumberUtils.isLong(userId)) {
+            paramMap.put("userId", Long.parseLong(userId));
+        }
         pageParam.setOrderByCondition("create_time desc");
         return stockOrderService.listProductStockInfo(pageParam, paramMap);
     }

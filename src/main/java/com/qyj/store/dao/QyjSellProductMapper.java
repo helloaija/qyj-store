@@ -91,4 +91,11 @@ public interface QyjSellProductMapper {
      * @return
      */
     List<QyjSellProductEntity> listSellProductAllInfo(Map<String, Object> paramMap);
+
+	/**
+	 * 获取用户最后一次购买产品的价格
+	 * @param paramMap
+	 * @return
+	 */
+	List<QyjSellProductEntity> listLastSellPrice(Map<String, Object> paramMap);
 }
