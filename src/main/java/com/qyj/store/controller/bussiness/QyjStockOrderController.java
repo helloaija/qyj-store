@@ -58,7 +58,7 @@ public class QyjStockOrderController extends BaseController {
         paramMap.put("likeOrderNumber", orderNumber);
         paramMap.put("createTimeBegin", createTimeBegin);
         paramMap.put("createTimeEnd", createTimeEnd);
-        pageParam.setOrderByCondition("create_time desc");
+        pageParam.setOrderByCondition("order_time desc");
         return stockOrderService.listStockOrderAndProductPage(pageParam, paramMap);
     }
 

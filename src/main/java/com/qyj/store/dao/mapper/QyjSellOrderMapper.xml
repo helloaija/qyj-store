@@ -158,8 +158,9 @@
 
     <!-- 统计订单 -->
     <select id="countSellOrder" parameterType="java.util.Map" resultType="java.util.Map">
-        select count(o.id) totalCount, sum(o.order_amount) totalOrderAmount, sum(o.has_pay_amount) totalHasPayAmount
-        from qyj_sell_order o left join qyj_user u on o.user_id = u.id
+        select count(o.id) totalCount, sum(o.order_amount) totalOrderAmount, sum(o.has_pay_amount) totalHasPayAmount,
+            sum((p.price - p.stock_price) * p.number) totalProfitAmount
+        from qyj_sell_order o left join qyj_user u on o.user_id = u.id left join qyj_sell_product p on o.id = p.sell_id
         <where>
             <include refid="condition_user"/>
         </where>

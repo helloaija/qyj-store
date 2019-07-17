@@ -72,7 +72,7 @@ public class QyjSellOrderController extends BaseController {
         paramMap.put("likeMobilePhone", mobilePhone);
         paramMap.put("orderTimeBegin", orderTimeBegin);
         paramMap.put("orderTimeEnd", orderTimeEnd);
-        pageParam.setOrderByCondition("create_time desc");
+        pageParam.setOrderByCondition("order_time desc");
         return sellOrderService.listSellOrderAndProductPage(pageParam, paramMap);
     }
 
