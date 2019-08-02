@@ -2,10 +2,12 @@ package com.qyj.store.controller.bussiness.app;
 
 import com.qyj.common.page.PageParam;
 import com.qyj.common.page.ResultBean;
+import com.qyj.common.utils.StringUtils;
 import com.qyj.store.config.QyjUserDetails;
 import com.qyj.store.controller.BaseController;
 import com.qyj.store.entity.QyjSellOrderEntity;
 import com.qyj.store.service.QyjSellOrderService;
+import com.qyj.store.service.QyjStatisticsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,8 @@ public class AppSellOrderController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(AppSellOrderController.class);
 
     private QyjSellOrderService sellOrderService;
+
+    private QyjStatisticsService qyjStatisticsService;
 
     /**
      * 获取销售订单分页数据信息
@@ -155,33 +159,52 @@ public class AppSellOrderController extends BaseController {
     }
 
     /**
-     * 获取用户订单金额统计数据
+     * 获取销售产品分页数据
      * @param request
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/listUserOrderSumPage", method = RequestMethod.GET)
-    public ResultBean listUserOrderSumPage(HttpServletRequest request) {
+    @RequestMapping(value = "/getSellProductPage", method = RequestMethod.GET)
+    public ResultBean getSellProductPage(HttpServletRequest request) {
         PageParam pageParam = this.initPageParam(request);
-        // 买家名称
+        // 用户姓名
         String userName = request.getParameter("userName");
-        // 买家电话
-        String mobilePhone = request.getParameter("mobilePhone");
-        // 订单开始时间
+        // 产品名称
+        String productTitle = request.getParameter("productTitle");
+        // 用户姓名或产品
+        String nameOrTitle = request.getParameter("nameOrTitle");
+        // 销售时间区间
         String orderTimeBegin = request.getParameter("orderTimeBegin");
-        // 订单结束时间
         String orderTimeEnd = request.getParameter("orderTimeEnd");
         Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("likeUserName", userName);
-        paramMap.put("likeMobilePhone", mobilePhone);
-        paramMap.put("orderTimeBegin", orderTimeBegin);
-        paramMap.put("orderTimeEnd", orderTimeEnd);
-        pageParam.setOrderByCondition("create_time desc");
-        return sellOrderService.listUserOrderSumPage(pageParam, paramMap);
+        paramMap.put("pageParam", pageParam);
+
+        if (!StringUtils.isEmpty(userName) && !StringUtils.isEmpty(userName.trim())) {
+            paramMap.put("userName", userName);
+        }
+        if (!StringUtils.isEmpty(productTitle) && !StringUtils.isEmpty(productTitle.trim())) {
+            paramMap.put("productTitle", productTitle);
+        }
+        if (!StringUtils.isEmpty(orderTimeBegin) && !StringUtils.isEmpty(orderTimeBegin.trim())) {
+            paramMap.put("orderTimeBegin", orderTimeBegin);
+        }
+        if (!StringUtils.isEmpty(orderTimeEnd) && !StringUtils.isEmpty(orderTimeEnd.trim())) {
+            paramMap.put("orderTimeEnd", orderTimeEnd);
+        }
+        if (!StringUtils.isEmpty(nameOrTitle) && !StringUtils.isEmpty(nameOrTitle.trim())) {
+            paramMap.put("nameOrTitle", nameOrTitle);
+        }
+
+        return qyjStatisticsService.listSellProductPage(paramMap);
     }
 
     @Autowired
     public void setSellOrderService(QyjSellOrderService sellOrderService) {
         this.sellOrderService = sellOrderService;
+    }
+
+    @Autowired
+    public void setQyjStatisticsService(QyjStatisticsService qyjStatisticsService) {
+        this.qyjStatisticsService = qyjStatisticsService;
     }
 }

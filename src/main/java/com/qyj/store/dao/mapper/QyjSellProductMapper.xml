@@ -152,6 +152,9 @@
 		<if test="orderTimeEnd != null and orderTimeEnd != ''">
 			<![CDATA[and so.order_time < DATE_FORMAT(date_add(#{orderTimeEnd,jdbcType=TIMESTAMP}, interval 1 day), '%Y-%c-%d')]]>
 		</if>
+		<if test="nameOrTitle != null and nameOrTitle != ''">
+			and (p.title like concat('%', #{nameOrTitle}, '%') or u.user_name like concat('%', #{nameOrTitle}, '%'))
+		</if>
 	</sql>
 
 	<!--统计获取订单信息-->

@@ -107,7 +107,7 @@ public class QyjStatisticsController extends BaseController {
         // 用户姓名
         String userName = request.getParameter("userName");
         // 产品名称
-        String productTitie = request.getParameter("productTitie");
+        String productTitle = request.getParameter("productTitle");
         // 销售时间区间
         String orderTimeBegin = request.getParameter("orderTimeBegin");
         String orderTimeEnd = request.getParameter("orderTimeEnd");
@@ -117,8 +117,8 @@ public class QyjStatisticsController extends BaseController {
         if (!StringUtils.isEmpty(userName) && !StringUtils.isEmpty(userName.trim())) {
             paramMap.put("userName", userName);
         }
-        if (!StringUtils.isEmpty(productTitie) && !StringUtils.isEmpty(productTitie.trim())) {
-            paramMap.put("productTitie", productTitie);
+        if (!StringUtils.isEmpty(productTitle) && !StringUtils.isEmpty(productTitle.trim())) {
+            paramMap.put("productTitle", productTitle);
         }
         if (!StringUtils.isEmpty(orderTimeBegin) && !StringUtils.isEmpty(orderTimeBegin.trim())) {
             paramMap.put("orderTimeBegin", orderTimeBegin);
@@ -141,7 +141,7 @@ public class QyjStatisticsController extends BaseController {
         // 用户姓名
         String userName = request.getParameter("userName");
         // 产品名称
-        String productTitie = request.getParameter("productTitie");
+        String productTitle = request.getParameter("productTitle");
         // 销售时间区间
         String orderTimeBegin = request.getParameter("orderTimeBegin");
         String orderTimeEnd = request.getParameter("orderTimeEnd");
@@ -150,8 +150,8 @@ public class QyjStatisticsController extends BaseController {
         if (!StringUtils.isEmpty(userName) && !StringUtils.isEmpty(userName.trim())) {
             paramMap.put("userName", userName);
         }
-        if (!StringUtils.isEmpty(productTitie) && !StringUtils.isEmpty(productTitie.trim())) {
-            paramMap.put("productTitie", productTitie);
+        if (!StringUtils.isEmpty(productTitle) && !StringUtils.isEmpty(productTitle.trim())) {
+            paramMap.put("productTitle", productTitle);
         }
         if (!StringUtils.isEmpty(orderTimeBegin) && !StringUtils.isEmpty(orderTimeBegin.trim())) {
             paramMap.put("orderTimeBegin", orderTimeBegin);
