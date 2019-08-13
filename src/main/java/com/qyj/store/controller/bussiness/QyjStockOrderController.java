@@ -53,11 +53,15 @@ public class QyjStockOrderController extends BaseController {
         String createTimeBegin = request.getParameter("createTimeBegin");
         // 创建结束时间
         String createTimeEnd = request.getParameter("createTimeEnd");
+        // 供应商名称
+        String supplierName = request.getParameter("supplierName");
+
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("orderStatus", orderStatus);
         paramMap.put("likeOrderNumber", orderNumber);
         paramMap.put("createTimeBegin", createTimeBegin);
         paramMap.put("createTimeEnd", createTimeEnd);
+        paramMap.put("likeSupplierName", supplierName);
         pageParam.setOrderByCondition("order_time desc");
         return stockOrderService.listStockOrderAndProductPage(pageParam, paramMap);
     }

@@ -54,6 +54,9 @@
         <if test="createTimeEnd != null and createTimeEnd != ''">
             <![CDATA[and create_time < DATE_FORMAT(date_add(#{createTimeEnd,jdbcType=TIMESTAMP}, interval 1 day), '%Y-%c-%d')]]>
         </if>
+        <if test="likeSupplierName != null and likeSupplierName != ''">
+            and supplier_name like concat(concat('%',#{likeSupplierName}),'%')
+        </if>
     </sql>
 
     <!-- 根据查询条件获取订单 -->
